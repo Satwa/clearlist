@@ -22,7 +22,7 @@
     "passport-pocket": "^1.0.0",
     "passport-twitter": "^1.0.0",
     "requestify": "^0.2.5",
-    "sequelize": "^4.38.1",
+    "sequelize": ">=5.3.0",
     "sqlite3": "^4.0.2",
     "stripe": "^6.12.1",
     "twit": "^2.2.11",
