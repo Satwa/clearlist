@@ -1,22 +1,32 @@
-$("#waitIcon").hide()
+const addButton  = document.querySelector("#addLink")
+const waitIcon   = document.querySelector("#waitIcon")
+const sendIcon   = document.querySelector("#sendIcon")
+const linkField  = document.querySelector("#linkField")
+const table 	 = document.querySelector("table")
+const alert 	 = document.querySelector("#alert")
+
+waitIcon.style.display = "none"
+
 let messages = []
 
-
-$("#addLink").click((e) => {
+addButton.addEventListener("click", (e) => {
 	e.preventDefault()
-	$("#linkField").attr("disabled", true)
-	$("#addLink").attr("disabled", true)
+	linkField.setAttribute("disabled", true)
+	addButton.setAttribute("disabled", true)
 
-	let url = $("#linkField").val()
+	let url = linkField.value
 	if(!url.trim()){
-		_addAlertMessage("warning", "Please enter a link first")
-		$("#linkField").attr("disabled", false)
-		$("#addLink").attr("disabled", false)
+		_addAlertMessage("warning", "Please enter a link first.")
+		linkField.removeAttribute("disabled")
+		addButton.removeAttribute("disabled")
+		
 		return
 	}
+
 	console.log(url)
-	$("#waitIcon").show()
-	$("#sendIcon").hide()
+	waitIcon.style.display = "inline"
+	sendIcon.style.display = "none"
+
 	fetch("/api/link/add", {
 		method: 'POST',
 		credentials: 'same-origin',
@@ -27,41 +37,44 @@ $("#addLink").click((e) => {
 	}).then((response) => {
 		return response.json()
 	}).then((data) => {
-		if(data.success){
-			$("table").append($("<tr> <td><i class=\"fas fa-smile\" title=\"This link has just been added\"></i></td> <td><a href=" + url + " target=\"_blank\" style=\"text-decoration: none;\"><span style=\"color:#777;\">No title yet.</span></a></td> <td class=\"arLinks\"><i class=\"fas fa-trash-alt\" onclick=\"_delete(" + data.linkId + ")\" id=\"l" + data.linkId + "\"></i></td> </tr>"))
+		if (data.success) {
+			
+			table.querySelector("tbody").insertAdjacentHTML("beforeend", "<tr> <td><i class=\"fas fa-smile\" title=\"This link has just been added\"></i></td> <td><a href=" + url + " target=\"_blank\" style=\"text-decoration: none;\"><span style=\"color:#777;\">No title yet.</span></a></td> <td class=\"arLinks\"><i class=\"fas fa-trash-alt\" onclick=\"_delete(" + data.linkId + ")\" id=\"l" + data.linkId + "\"></i></td> </tr>")
 			_addAlertMessage("info", "This link has been added to your list, read it soon in your inbox!")
-		}else{
+		} else {
 			_addAlertMessage("warning", "This link seems unavailable. Please retry 🙏")
 		}
-		$("#linkField").attr("disabled", false)
-		$("#addLink").attr("disabled", false)
-		$("#waitIcon").hide()
-		$("#sendIcon").show()
-		$("#linkField").val("")
+		linkField.removeAttribute("disabled")
+		addButton.removeAttribute("disabled")
+		waitIcon.style.display = "none"
+		sendIcon.style.display = "inline"
+		linkField.value = ""
 	})
 	.catch((err) => {
 		console.log(err)
 		_addAlertMessage("warning", "Can't reach server. Please retry 🙏")
-		$("#linkField").attr("disabled", false)
-		$("#addLink").attr("disabled", false)
-		$("#waitIcon").hide()
-		$("#sendIcon").show()
+		linkField.removeAttribute("disabled")
+		addButton.removeAttribute("disabled")
+		waitIcon.style.display = "none"
+		sendIcon.style.display = "inline"
 	})
-
-	// _addAlertMessage("info", "Added.")
-	// _addAlertMessage("warning", "Ooops.")
-	// _addAlertMessage("thanks", "Thanks for subscribing <3")
 })
 
 let _addAlertMessage = (type, text, duration = 10000) => {
 	let sign = ""
-	$("#alert").show()
+	alert.style.display = "block"
 	if(type == "info"){ sign = '<i class="fas fa-info-circle"></i>' }
 	else if(type == "warning"){ sign = '<i class="fas fa-exclamation-triangle"></i>' }
 	else if(type == "thanks"){ sign = '<i class="fas fa-heart"></i>' }
 	messages.push("<div id='a" + messages.length + "'>" + sign + " " + text + "</div>")
-	$("#alert").append(messages[messages.length - 1])
-	setTimeout(() => { $("#alert div:first").remove(); messages.shift(); if(messages.length === 0){$("#alert").hide()} }, duration)
+	alert.innerHTML += messages[messages.length - 1]
+	setTimeout(() => { 
+		alert.querySelector("div>div").remove()
+		messages.shift()
+		if(messages.length === 0){
+			alert.style.display = "none"
+		} 
+	}, duration)
 }
 
 let _delete = (id) => {
@@ -77,10 +90,10 @@ let _delete = (id) => {
 		}).then((res) => {return res.json()})
 		  .then((data) => {
 		  	if(data.success){
-		  		_addAlertMessage("info", "This link has been deleted!")
-		  		$("#l" + id).parent().parent().remove() // Remove link
+				_addAlertMessage("info", "This link has been deleted!")
+				document.querySelector(`#l${id}`).parentNode.parentNode.remove() // Remove link
 		  	}else{
-		  		_addAlertMessage("warning", "It seems like this link can't be deleted")
+		  		_addAlertMessage("warning", "It seems like this link can't be deleted..")
 		  	}
 		  })
 	}

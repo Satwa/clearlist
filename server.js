@@ -12,7 +12,7 @@ const passport 		= require('passport')
 const Sequelize     = require('sequelize')
 const TwitterStrategy = require('passport-twitter').Strategy
 const PocketStrategy  = require('passport-pocket')
-const sequelize     = new Sequelize('sqlite://data/storage.sqlite')
+const sequelize 	= new Sequelize('sqlite://data/storage.sqlite', { logging: false })
 const schedule 		= require('node-schedule')
 
 const stripe 		= require("stripe")(process.env.STRIPE_KEY)
@@ -71,7 +71,7 @@ const Link = sequelize.define("links", {
 	title: Sequelize.STRING,
 	state: {
 		type: Sequelize.BOOLEAN, 
-		defaultValue: 0 //0: to send / / 1: sent
+		defaultValue: 0 //0: to send || 1: sent
 	}
 })
 
@@ -133,11 +133,6 @@ passport.use(new PocketStrategy({
 	 consumerKey    : process.env.POCKET_CONSUMER_KEY,
      callbackURL    : CALLBACKURL + "login/pocket/callback"
 }, (username, token, done) => {
-	// TODO: CRON fetch links 
-
-	// https://stackoverflow.com/questions/19970294/linking-mutiple-3rd-party-and-local-accounts-together-with-passport
-    // http://www.passportjs.org/packages/passport-pocket/
-    // https://github.com/jaredhanson/passport/issues/81
 	done(null, token)
 }))
 
@@ -199,7 +194,7 @@ app.get("/account", (req, res) => {
 	    return
 	}
 	
-	Link.findAll({where: {user_id: req.user.id} })
+	Link.findAll({where: {user_id: req.user.id}, order: [['state', 'ASC']] })
 		.then((links) => {
 			res.render("account", {links: links})
 		})

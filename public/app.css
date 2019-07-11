@@ -40,23 +40,29 @@ header a{
 	font-style: bold;
 	font-weight: 500;
 }
+.onboard form{
+	padding: 20px; 
+	background: white; 
+	border-radius: 8px;
+}
 .onboard input{
 	width: 100%; max-width: 610px;
 	line-height: 27px; font-size: 18px;
 	padding: 5px; border:none;
-	background: none; color: white;
-	border-left: 2px solid lightgreen;
-	border-bottom: 2px solid lightgreen;
+	background: none; 
+	border: 2px solid lightgreen;
 	border-radius: 0 5px;
 	outline: 0;
 }
 .onboard input::placeholder{color: #999;}
 .onboard button{
 	line-height: 27px; font-size: 18px;
-	background: none; color: white;
+	background: none; 
 	border:none;
-	border-right: 3px solid lightgreen;
-	border-top: 2px solid lightgreen;
+	border: 2px solid lightgreen;
+	border-left: 4px solid lightgreen;
+	border-bottom: 4px solid lightgreen;
+	border-radius: 0 5px;
 	cursor:pointer;
 }
 .onboard button:active{
@@ -99,9 +105,11 @@ header a{
 	top: 5px;
 	max-width: 250px;
 	z-index: 10;
-	background-color: #EEE;
-	border: 1px solid #222;
-	border-radius: 5px;
-	padding: 10px;
+	background-color: #FFF;
+	-webkit-box-shadow: 5px 5px 17px -8px rgb(112, 112, 112);
+	-moz-box-shadow: 5px 5px 17px -8px rgb(112, 112, 112);
+	box-shadow: 5px 5px 17px -8px rgb(112, 112, 112);
+	border-radius: 8px;
+	padding: 16px;
 	display: none;
 }
