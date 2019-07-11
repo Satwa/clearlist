@@ -64,7 +64,7 @@ User.findAll({
         }).then((res) => {
             let data = res.getBody()
             for(let item of Object.values(data.list)){
-                Link.find({ where: { user_id: user.twitter_id, link: item.resolved_url } })
+                Link.findOne({ where: { user_id: user.twitter_id, link: item.resolved_url } })
                     .then((link) => {
                         if(!link){
                             Link.build({ link: item.resolved_url, user_id: user.twitter_id, title: item.resolved_title }).save()

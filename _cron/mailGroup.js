@@ -67,7 +67,7 @@ User.findAll({where: {
 		if(d.getHours() == 8){
 			console.log("Time to send mail for: " + user.screen_name)
 
-			Link.find({
+			Link.findOne({
 				where: {
 					state: 0,
 					user_id: user.twitter_id
@@ -75,7 +75,7 @@ User.findAll({where: {
 				order: sequelize.random()
 			}).then((link) => {
 				read(link.link, (err, article, meta) => {
-					ejs.renderFile("template.ejs", {
+					ejs.renderFile("./_cron/template.ejs", {
 						title: article.title,
 						content: article.content,
 						link: link.link,
@@ -94,10 +94,10 @@ User.findAll({where: {
 					})
 				})
 
-			})
+			}).catch((err) => console.log(err))
 		}
 	})
-})
+}).catch((err) => console.log(err))
 
 let sendMail = (email, subject, html, text) => {
 	let mailOptions = {

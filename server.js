@@ -200,15 +200,12 @@ app.get("/account", (req, res) => {
 		})
 })
 app.post("/account/update", (req, res) => {
-	if(!req.isAuthenticated()){
+	if(!req.isAuthenticated() || !req.body.timezone_offset){
 	    res.redirect("/")
 	    return
 	}
 
-	// TODO: Secure inputs
-
 	let timezone_offset = req.body.timezone_offset
-	// let timezone_offset = req.body.timezone_offset.split(":")[0]
 
 	User.findOne({where: { twitter_id: req.user.id }})
 		.then((user) => {
@@ -242,7 +239,7 @@ app.post("/api/link/add", (req, res) => {
 		urlExists(link, (err, exists) => {
 			if(exists){
 				// Check for duplicates
-				Link.find({ where: { user_id: req.user.id, link: link, state: 0 } })
+				Link.findOne({ where: { user_id: req.user.id, link: link, state: 0 } })
 					.then((link) => {
 						if(!link){
 							Link.build({ link: linkUrl, user_id: req.user.id }).save()
@@ -286,21 +283,17 @@ app.delete("/api/link/:id", (req, res) => {
 
 // TODO: ClearList for:
 		// vvv https://getpocket.com/developer/docs/v3/retrieve vvv //
-    // - Pocket [POST: https://getpocket.com/v3/get || state, contentType, consumer_key|access_token]
     // - UptimeRobot on server
     // - Telegram bot?
     // - Twitter bot?
     // - Subscription (Stripe)
  		// - Just in case of premium feature - no idea yet
-    // [- Cron fetch from Pocket
     // [- Resend mail for later
     // [- Send this next
     // [- Choose days and hour preferred for mail
     // [- Edit profile (?)
     // - Watchlist (on weekend)
     // //- Notion-Medium
-
-// https://stackoverflow.com/questions/32986314/retrieving-data-from-pocket-api-oauth
 
 // nodemon server.js && maildev [ http://localhost:3000/account | http://localhost:1080/ ]
 
