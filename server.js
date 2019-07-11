@@ -15,18 +15,18 @@ const PocketStrategy  = require('passport-pocket')
 const sequelize 	= new Sequelize('sqlite://data/storage.sqlite', { logging: false })
 const schedule 		= require('node-schedule')
 
-const stripe 		= require("stripe")(process.env.STRIPE_KEY)
+// const stripe 		= require("stripe")(process.env.STRIPE_KEY)
 const CALLBACKURL   = process.env.CALLBACK_URL
 
 // Scheduler
 schedule.scheduleJob("01 * * * *", () => {
+	require("./_cron/fetchPocket") // fetch from Pocket every hour
+
 	require("./_cron/mailGroup") // mail group every hour
 })
 schedule.scheduleJob("*/2 * * * *", () => {
 	require("./_cron/fetchTitle") // every 5 minutes
 })
-
-
 
 app.set('view engine', "ejs")
 app.use(express.static('public'))
@@ -299,10 +299,8 @@ app.delete("/api/link/:id", (req, res) => {
     // [- Edit profile (?)
     // - Watchlist (on weekend)
     // //- Notion-Medium
-// https://github.com/Siedrix/passport-pocket#readme
-// https://stackoverflow.com/questions/32986314/retrieving-data-from-pocket-api-oauth
 
-// https://stripe.com/docs/account
+// https://stackoverflow.com/questions/32986314/retrieving-data-from-pocket-api-oauth
 
 // nodemon server.js && maildev [ http://localhost:3000/account | http://localhost:1080/ ]
 
