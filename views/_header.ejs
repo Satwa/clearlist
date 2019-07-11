@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%= title %> - ClearList</title>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="ClearList is an app sending you daily email with an article from your save-for-later reading list. It's time to say stop to endless links in your list!">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon"> <!-- TODO: Favicon -->
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/fontawesome.css" integrity="sha384-1rquJLNOM3ijoueaaeS5m+McXPJCGdr5HcA03/VHXxcp2kX2sUrQDmFc3jR5i/C7" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/solid.css" integrity="sha384-VGP9aw4WtGH/uPAOseYxZ+Vz/vaTb1ehm1bwx92Fm8dTrE+3boLfF1SpAtB1z7HW" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,500" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/simple-grid.min.css">
+	<link rel="stylesheet" type="text/css" href="/app.css">
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<header>
+				<a href="/"><h1>ClearList</h1></a>
+				<% if(!isLog){ %>
+					<a href="/login" class="join">Join with Twitter</a>
+				<% }else{ %>
+					<!-- <a href="/account" class="join">My account</a> -->
+					<span><%= user.displayName %> | <a href="/logout" class="join"> Logout</a></span>
+				<% } %>
+			</header>
+		</div>

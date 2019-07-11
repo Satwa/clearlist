@@ -1,0 +1,107 @@
+html, body{
+	padding:0;
+	margin: 0;
+	background-image: linear-gradient(to left bottom, #2cbb1f, #52cc1c, #72dd16, #91ee0e, #b0ff00);
+}
+*{
+	box-sizing: border-box;
+	font-family: 'Roboto', sans-serif;
+	font-style: normal;
+	font-weight: 300;
+}
+/* https://mycolor.space/gradient?ori=to+left+bottom&hex=%232CBB1F&hex2=%23B0FF00&sub=1 */
+header{
+	padding: 10;
+	text-align:center;
+	display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-style: normal;
+}
+header h1{
+	cursor: pointer;
+}
+header .join{
+	font-size: 20px;
+
+}
+header .join i{margin-right: 5px;}
+header a{
+	text-decoration: none;
+	color:inherit;
+}
+
+.onboard{
+	margin-top:50px;
+	text-align: center;
+}
+
+.onboard h1{
+	font-style: bold;
+	font-weight: 500;
+}
+.onboard input{
+	width: 100%; max-width: 610px;
+	line-height: 27px; font-size: 18px;
+	padding: 5px; border:none;
+	background: none; color: white;
+	border-left: 2px solid lightgreen;
+	border-bottom: 2px solid lightgreen;
+	border-radius: 0 5px;
+	outline: 0;
+}
+.onboard input::placeholder{color: #999;}
+.onboard button{
+	line-height: 27px; font-size: 18px;
+	background: none; color: white;
+	border:none;
+	border-right: 3px solid lightgreen;
+	border-top: 2px solid lightgreen;
+	cursor:pointer;
+}
+.onboard button:active{
+	border:none;
+	background:lightgreen;
+	border-left: 2px solid lightgreen;
+	border-bottom: 3px solid lightgreen;
+}
+
+.account {
+	background: white;
+	width:100%;
+	margin-top: 50px;
+	padding: 10px;
+}
+.account table{
+	width: 100%;
+	text-align: center;
+}
+.account table tr th{
+	font-size:20px;
+	background: #72dd16;
+	color: white;
+	cursor: default;
+}
+.account table td, .account table th {
+    padding: 8px;
+}
+.account table tr:nth-child(even){background-color: #f2f2f2;}
+.account table tr:hover {background-color: #91ee0e;}
+.account table tr .arLinks{
+	display:flex; 
+	justify-content: space-around;
+	min-width:100px;
+}.account table tr .arLinks i{ cursor: pointer; }
+
+.alert{
+	position: fixed;
+	right: 5px;
+	top: 5px;
+	max-width: 250px;
+	z-index: 10;
+	background-color: #EEE;
+	border: 1px solid #222;
+	border-radius: 5px;
+	padding: 10px;
+	display: none;
+}

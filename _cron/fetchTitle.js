@@ -1,0 +1,36 @@
+const Sequelize     = require('sequelize')
+const extract 		= require('meta-extractor')
+const sequelize     = new Sequelize('sqlite://./data/storage.sqlite')
+
+console.log("- Initializing fetchTitle cron task..")
+
+sequelize
+ 	.authenticate()
+	    .then(() => console.log("Successfully logged into storage") )
+	    .catch((err) => console.error("Error logging into storage, error: " + err) )
+
+const Link = sequelize.define("links", {
+	link: Sequelize.STRING,
+	title: Sequelize.STRING,
+	state: {
+		type: Sequelize.BOOLEAN, 
+		defaultValue: 0 //0: to send / / 1: sent
+	}
+})
+Link.sync()
+
+Link.findAll({where: {title: null}})
+	.then((link) => {
+		link.forEach((elm) => {
+			extract({ uri: elm.link })
+			  .then(res => elm.update({title: res.title}))
+			  .catch(err => console.error(err));
+			console.log(elm.title)
+		})
+	})
+
+
+
+
+
+console.log("- Done fetchTitle cron task..")
