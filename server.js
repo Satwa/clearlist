@@ -63,7 +63,15 @@ const User = sequelize.define("users", {
 	},
 	twitter_access: Sequelize.STRING,
 	twitter_secret: Sequelize.STRING,
-	schedule: Sequelize.STRING // Timezone
+	schedule: Sequelize.STRING, // Timezone
+	hour_preference: {
+		type: Sequelize.INTEGER,
+		defaultValue: 8
+	},
+	days_preference: {
+		type: Sequelize.STRING,
+		defaultValue: "0123456" // 0=> Sunday
+	}
 })
 
 const Link = sequelize.define("links", {
@@ -104,10 +112,11 @@ passport.use(new TwitterStrategy({
 		        schedule = user.schedule
 		        user.update({
 		        	twitter_access: token,
-		        	twitter_secret: tokenSecret,
+					twitter_secret: tokenSecret,
+					// Under this should probably be disabled if we want in-app customization
 		        	screen_name: profile.displayName,
 		            email: profile.emails[0].value
-		        })
+				})
 	      	}else{ // No user, we create one
 		        console.log("No user") 
 		        User.build({
@@ -218,7 +227,7 @@ app.post("/account/update", (req, res) => {
 			})
 		})
 
-	res.redirect("/account")
+	res.redirect("/account?toast=info&message=Timezone-successfully-updated!")
 })
 
 app.get('/', function(request, response) {
@@ -280,17 +289,19 @@ app.delete("/api/link/:id", (req, res) => {
 	}
 })
 
+// DOING:
+	//  - Choose days and hour preferred for mail
 
 // TODO: ClearList for:
-		// vvv https://getpocket.com/developer/docs/v3/retrieve vvv //
     // - UptimeRobot on server
     // - Telegram bot?
-    // - Twitter bot?
+	// - Twitter bot?
+	// - Design Pocket link & account page
     // - Subscription (Stripe)
- 		// - Just in case of premium feature - no idea yet
+	// - Just in case of premium feature - no idea yet
+	// - Setup mail server for production
     // [- Resend mail for later
     // [- Send this next
-    // [- Choose days and hour preferred for mail
     // [- Edit profile (?)
     // - Watchlist (on weekend)
     // //- Notion-Medium
