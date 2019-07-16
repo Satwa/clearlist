@@ -309,16 +309,14 @@ app.delete("/api/link/:id", (req, res) => {
 
 // DOING:
 	// - Setup mail server for production
-	// - Setup database for production
 
 // TODO: ClearList for:
     // - UptimeRobot on server
 	// - Design Pocket link & account page
-	// [- Edit profile (?)
     // - Subscription (Stripe)
-	// - Choose days
-	// - Send this next
-	// - Resend mail for later
+		// - Choose days
+		// - Send this next
+		// - Resend mail for later
 	// ////////////////////////////
     // - Telegram bot?
 	// - Twitter bot?
