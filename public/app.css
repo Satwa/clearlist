@@ -33,8 +33,10 @@ header a{
 
 .onboard{
 	margin-top:50px;
-	background: white; 
 	text-align: center;
+}
+.account_onboard{
+	background: white; 
 }
 
 .onboard h1{
