@@ -34,9 +34,9 @@ app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session({
-  name: 'session',
-  keys: [process.env.SESSION_KEY],
-  maxAge: 168 * 60 * 60 * 1000 // 168 hours (7 days)
+	name: 'session',
+	keys: [process.env.SESSION_KEY],
+	maxAge: 168 * 60 * 60 * 1000 // 168 hours (7 days)
 }))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -127,20 +127,23 @@ passport.use(new TwitterStrategy({
 		            twitter_id: profile.id,
 		            email: profile.emails[0].value
 		        }).save()
-	      	}
-	    })
-	    done(null, {
-	    	provider: "twitter",
-	    	id: profile.id,
-	    	displayName: profile.username,
-	    	schedule: schedule
-	    })
+			}
+
+			done(null, {
+				provider: "twitter",
+				id: profile.id,
+				displayName: profile.username,
+				schedule: schedule,
+				hour_preference: user.hour_preference,
+				days_preference: user.days_preference
+			})
+		})
 	  }
 ))
 
 passport.use(new PocketStrategy({
-	 consumerKey    : process.env.POCKET_CONSUMER_KEY,
-     callbackURL    : CALLBACKURL + "login/pocket/callback"
+	 consumerKey: process.env.POCKET_CONSUMER_KEY,
+     callbackURL: CALLBACKURL + "login/pocket/callback"
 }, (username, token, done) => {
 	done(null, token)
 }))
@@ -162,7 +165,9 @@ passport.deserializeUser(function(id, done) {
 	      		provider: "twitter",
 	    		id: user.twitter_id,
 	        	displayName: user.screen_name,
-	        	schedule: user.schedule
+				schedule: user.schedule,
+				hour_preference: user.hour_preference,
+				days_preference: user.days_preference
 	      	})
 	    }else{
 	    	console.log("no user")
@@ -176,10 +181,14 @@ passport.deserializeUser(function(id, done) {
 // Login-related
 app.get("/logout", (req, res) => { req.logout(); res.redirect('/') })
 app.get("/login", passport.authenticate('twitter'))
-app.get("/login/pocket", passport.authorize('pocket', { failureRedirect: '/account' }))
+app.get("/login/callback", passport.authenticate('twitter', { successRedirect: '/account', failureRedirect: '/' }))
+
+app.get("/login/pocket", 
+	passport.authorize('pocket', { failureRedirect: '/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again' })
+)
 
 app.get("/login/pocket/callback", 
-	passport.authorize('pocket', { failureRedirect: '/account' }),
+	passport.authorize('pocket', { failureRedirect: '/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again' }),
 	(req, res) => {
 		User.findOne({ where: { twitter_id: req.user.id } })
 			.then((user) => {
@@ -187,25 +196,28 @@ app.get("/login/pocket/callback",
 					console.log("NO USER")
 					return
 				}
+				
+			})
+			if(req.account !== undefined){
 				user.update({
 					pocket_token: req.account
 				})
-			})
+				res.redirect("/account?toast=info&message=Successfully-linked-your-Pocket-account,-currently-syncing-your-list")
+			}else{
+				res.redirect("/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again")
+			}
+})
 
-		res.redirect("/account")
-	})
-
-app.get("/login/callback", passport.authenticate('twitter', { successRedirect: '/account', failureRedirect: '/' }))
 
 app.get("/account", (req, res) => {
 	if(!req.isAuthenticated()){
 	    res.redirect("/")
 	    return
 	}
-	
+
 	Link.findAll({where: {user_id: req.user.id}, order: [['state', 'ASC']] })
 		.then((links) => {
-			res.render("account", {links: links})
+			res.render("account", { links: links, preferences: { days: req.user.days_preference, hour: req.user.hour_preference } })
 		})
 })
 app.post("/account/update", (req, res) => {
@@ -214,7 +226,12 @@ app.post("/account/update", (req, res) => {
 	    return
 	}
 
-	let timezone_offset = req.body.timezone_offset
+	let days = ""
+	for(let i = 0; i < 7; i++){
+		if(req.body[i.toString()]){
+			days += i
+		}
+	}
 
 	User.findOne({where: { twitter_id: req.user.id }})
 		.then((user) => {
@@ -223,11 +240,13 @@ app.post("/account/update", (req, res) => {
 				return
 			}
 			user.update({
-				schedule: timezone_offset
+				schedule: req.body.timezone_offset,
+				days_preference: days,
+				hour_preference: req.body.hour_preference
 			})
 		})
 
-	res.redirect("/account?toast=info&message=Timezone-successfully-updated!")
+	res.redirect("/account?toast=info&message=Preferences-successfully-updated!")
 })
 
 app.get('/', function(request, response) {
@@ -289,8 +308,7 @@ app.delete("/api/link/:id", (req, res) => {
 	}
 })
 
-// DOING:
-	//  - Choose days and hour preferred for mail
+// DOING: -
 
 // TODO: ClearList for:
     // - UptimeRobot on server
@@ -298,11 +316,13 @@ app.delete("/api/link/:id", (req, res) => {
 	// - Twitter bot?
 	// - Design Pocket link & account page
     // - Subscription (Stripe)
-	// - Just in case of premium feature - no idea yet
+		// - Just in case of premium feature - no idea yet
 	// - Setup mail server for production
     // [- Resend mail for later
     // [- Send this next
-    // [- Edit profile (?)
+	// [- Edit profile (?)
+	// ////////////////////////////
+	// IDEAS FOR LATER:
     // - Watchlist (on weekend)
     // //- Notion-Medium
 

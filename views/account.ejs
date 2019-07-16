@@ -16,16 +16,57 @@
 </div> <!-- /container -->
 
 <div class="account">
-	<h2>Account</h2>
+	<h2>Account preferences</h2>
 
-	<div class="row"> <!-- TODO: Améliorer -->
-		<div class="col-12" style="text-align: center;">
+	<div class="row">
+		<div class="col-12">
 				<!-- Username <input type="text"></div> -->
 				<!-- <br> -->
 				<a href="/login/pocket">Link Pocket</a>
 		</div>
-		<div class="col-12" style="text-align: center;">
-			<form method="post" action="/account/update">
+		<div class="col-12">
+			<form method="post" action="/account/update" style="text-align: center">
+
+				<input type="checkbox" name="1" id="1" class="day_checkbox"> <label for="1" class="day_checkbox_label">Monday</label>
+				<input type="checkbox" name="2" id="2" class="day_checkbox"> <label for="2" class="day_checkbox_label">Tuesday</label>
+				<input type="checkbox" name="3" id="3" class="day_checkbox"> <label for="3" class="day_checkbox_label">Wednesday</label>
+				<input type="checkbox" name="4" id="4" class="day_checkbox"> <label for="4" class="day_checkbox_label">Thursday</label>
+				<input type="checkbox" name="5" id="5" class="day_checkbox"> <label for="5" class="day_checkbox_label">Friday</label>
+				<input type="checkbox" name="6" id="6" class="day_checkbox"> <label for="6" class="day_checkbox_label">Saturday</label>
+				<input type="checkbox" name="0" id="0" class="day_checkbox"> <label for="0" class="day_checkbox_label">Sunday</label>
+
+				<br>
+
+				<label for="hour_preference">Preferred hour</label>
+				<select name="hour_preference" id="hour_preference">
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8" selected="selected">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+				</select>
+
+				<br>
+
 				<label for="timezone_offset">Your timezone</label>
 				<select name="timezone_offset" id="timezone-offset" class="span5">
 					<option value="-12:00">(GMT -12:00) Eniwetok, Kwajalein</option>
@@ -69,6 +110,9 @@
 					<option value="+13:00">(GMT +13:00) Apia, Nukualofa</option>
 					<option value="+14:00">(GMT +14:00) Line Islands, Tokelau</option>
 				</select>
+				
+				<br> <!-- Good ol' br-->
+
 				<input type="submit" name="Save">
 			</form>
 		</div>
@@ -117,9 +161,17 @@
 		</div>
 	</div>
 </div>
-<script type="text/javascript" src="/account.js">
-</script>
+<script type="text/javascript" src="/account.js"></script>
 <script type="text/javascript">
+	let preferences = <%- JSON.stringify(preferences) %>
+	for(let day_checkbox of document.querySelectorAll(".day_checkbox")) {
+		if (preferences.days.includes(day_checkbox.id)) {
+			day_checkbox.setAttribute("checked", true)
+		}
+	}
+
+	document.getElementById("hour_preference").value = preferences.hour.toString()
+
 	if("<%- user.schedule %>"){
 		document.getElementById("timezone-offset").value = "<%- user.schedule %>"
 	}else{

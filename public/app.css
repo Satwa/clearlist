@@ -78,6 +78,29 @@ header a{
 	margin-top: 50px;
 	padding: 10px;
 }
+
+.account .day_checkbox {
+	display: none;
+}
+.account .day_checkbox_label{
+	cursor:pointer;
+	padding: 8px;
+	background-color: #FFF;
+	-webkit-box-shadow: 5px 5px 17px -8px rgba(112, 112, 112, .6);
+	-moz-box-shadow: 5px 5px 17px -8px rgba(112, 112, 112, .6);
+	box-shadow: 5px 5px 17px -8px rgba(112, 112, 112, .6);
+	display: inline-block;
+	margin: 10px;
+}
+
+[type="checkbox"]:not(:checked) + label.day_checkbox_label {
+	background: #eec10e;
+}
+
+[type="checkbox"]:checked + label.day_checkbox_label {
+	background: #91ee0e;
+}
+
 .account table{
 	width: 100%;
 	text-align: center;
