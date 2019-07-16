@@ -195,8 +195,35 @@ app.get("/login/pocket/callback",
 					console.log("NO USER")
 					return
 				}
-				
+
 				if (req.account !== undefined) {
+					// Fetch from Pocket initially
+					requestify.request("https://getpocket.com/v3/get", {
+						method: "POST",
+						dataType: "json",
+						body: {
+							access_token: req.account,
+							consumer_key: process.env.POCKET_CONSUMER_KEY
+						}
+					}).then((res) => {
+						let data = res.getBody()
+						for (let item of Object.values(data.list)) {
+							Link.findOne({ where: { user_id: user.twitter_id, link: item.resolved_url } })
+								.then((link) => {
+									if (!link) {
+										Link.build({ link: item.resolved_url, user_id: user.twitter_id, title: item.resolved_title }).save()
+											.then((data) => {
+												console.log("[DEBUG] - Adding link for " + user.screen_name)
+											})
+									} else {
+										console.log("[DEBUG] - Link existing for " + user.screen_name)
+									}
+								})
+						}
+					}).catch((err) => console.log(err))
+
+
+					// Save token & redirect
 					user.update({
 						pocket_token: req.account
 					})
@@ -311,12 +338,11 @@ app.delete("/api/link/:id", (req, res) => {
 	// - Design Pocket link & account page
 	// - Landing Page
 
-// TODO: ClearList for:
+// TODO:
 	// - Subscription (Stripe)
 		// - Choose days
 		// - Send this next
 		// - Resend mail for later
-	// - UptimeRobot on server
 
 // IDEAS FOR LATER:
 	// - Telegram bot?

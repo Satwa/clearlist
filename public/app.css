@@ -33,6 +33,7 @@ header a{
 
 .onboard{
 	margin-top:50px;
+	background: white; 
 	text-align: center;
 }
 
@@ -75,8 +76,17 @@ header a{
 .account {
 	background: white;
 	width:100%;
-	margin-top: 50px;
 	padding: 10px;
+}
+hr {
+	width: 80%;
+  	border:none;
+  	height: 20px;
+ 	width: 90%;
+	height: 50px;
+	margin-top: 0;
+	border-bottom: 1px solid #EEE;
+  	margin: -50px auto 10px; 
 }
 
 .account .day_checkbox {
@@ -107,8 +117,8 @@ header a{
 }
 .account table tr th{
 	font-size:20px;
-	background: #72dd16;
-	color: white;
+	background: #EEE;
+	color: black;
 	cursor: default;
 }
 .account table td, .account table th {
