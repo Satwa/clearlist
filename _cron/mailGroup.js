@@ -64,7 +64,7 @@ User.findAll({where: {
 		let d = new Date()
 		d.setHours(d.getHours() + parseInt(user.schedule.split(":")[0]))
 
-		if(d.getHours() == 8){
+		if(d.getHours() == user.hour_preference && user.days_preference.includes(d.getDay().toString())){
 			console.log("Time to send mail for: " + user.screen_name)
 
 			Link.findOne({

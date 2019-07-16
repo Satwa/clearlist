@@ -215,7 +215,7 @@ app.get("/account", (req, res) => {
 	    return
 	}
 
-	Link.findAll({where: {user_id: req.user.id}, order: [['state', 'ASC']] })
+	Link.findAll({ where: {user_id: req.user.id}, order: [['state', 'ASC']] })
 		.then((links) => {
 			res.render("account", { links: links, preferences: { days: req.user.days_preference, hour: req.user.hour_preference } })
 		})
