@@ -196,15 +196,15 @@ app.get("/login/pocket/callback",
 					return
 				}
 				
+				if (req.account !== undefined) {
+					user.update({
+						pocket_token: req.account
+					})
+					res.redirect("/account?toast=info&message=Successfully-linked-your-Pocket-account,-currently-syncing-your-list")
+				} else {
+					res.redirect("/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again")
+				}
 			})
-			if(req.account !== undefined){
-				user.update({
-					pocket_token: req.account
-				})
-				res.redirect("/account?toast=info&message=Successfully-linked-your-Pocket-account,-currently-syncing-your-list")
-			}else{
-				res.redirect("/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again")
-			}
 })
 
 
