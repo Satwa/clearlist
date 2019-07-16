@@ -1,3 +1,4 @@
+require('dotenv').config()
 const Sequelize     = require('sequelize')
 const sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false })
 const nodemailer 	= require('nodemailer')
@@ -12,10 +13,23 @@ sequelize
 	    .catch((err) => console.error("Error logging into storage, error: " + err) )
 
 /* FOR DEV PURPOSE, configured for Maildev or Mailcatcher */
-var transporter = nodemailer.createTransport({
-	port: 1025,
-	ignoreTLS: true
-}) // TODO: Changer pour la prod
+var transporter
+if(process.env.STATUS){ // only defined on dev env.
+	transporter = nodemailer.createTransport({
+		port: 1025,
+		ignoreTLS: true
+	})
+}else{
+	transporter = nodemailer.createTransport({
+		host: process.env.MAIL_HOST,
+		port: process.env.MAIL_PORT,
+		secure: process.env.MAIL_SECURE, // true for 465, false for other ports
+		auth: {
+			user: process.env.MAIL_USER, // generated ethereal user
+			pass: process.env.MAIL_PASS // generated ethereal password
+		}
+	})
+}
 
 
 const User = sequelize.define("users", {
@@ -35,7 +49,7 @@ const Link = sequelize.define("links", {
 	link: Sequelize.STRING,
 	title: Sequelize.STRING,
 	state: {
-		type: Sequelize.BOOLEAN, 
+		type: Sequelize.INTEGER, 
 		defaultValue: 0 //0: to send | 1: sent
 	}
 })
@@ -60,7 +74,7 @@ User.findAll({where: {
 	}
 }).then((users) => {
 	users.forEach((user) => {
-		let d = new Date()
+		let d = new Date() // WIP: Is this GMT+0?
 		d.setHours(d.getHours() + parseInt(user.schedule.split(":")[0]))
 
 		if(d.getHours() == user.hour_preference && user.days_preference.includes(d.getDay().toString())){

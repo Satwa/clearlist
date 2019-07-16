@@ -1,3 +1,4 @@
+require('dotenv').config()
 const Sequelize = require('sequelize')
 const sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false })
 const requestify = require('requestify')
@@ -24,7 +25,7 @@ const Link = sequelize.define("links", {
     link: Sequelize.STRING,
     title: Sequelize.STRING,
     state: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.INTEGER,
         defaultValue: 0 //0: to send | 1: sent
     }
 })

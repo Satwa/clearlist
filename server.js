@@ -77,7 +77,7 @@ const Link = sequelize.define("links", {
 	link: Sequelize.STRING,
 	title: Sequelize.STRING,
 	state: {
-		type: Sequelize.BOOLEAN, 
+		type: Sequelize.INTEGER, 
 		defaultValue: 0 //0: to send || 1: sent
 	}
 })
@@ -308,21 +308,21 @@ app.delete("/api/link/:id", (req, res) => {
 })
 
 // DOING:
-	// - Setup mail server for production
+	// - Design Pocket link & account page
+	// - Landing Page
 
 // TODO: ClearList for:
-    // - UptimeRobot on server
-	// - Design Pocket link & account page
-    // - Subscription (Stripe)
+	// - Subscription (Stripe)
 		// - Choose days
 		// - Send this next
 		// - Resend mail for later
-	// ////////////////////////////
-    // - Telegram bot?
+	// - UptimeRobot on server
+
+// IDEAS FOR LATER:
+	// - Telegram bot?
 	// - Twitter bot?
-	// IDEAS FOR LATER:
-    // - Watchlist (on weekend)
-    // //- Notion-Medium
+	// - Watchlist (on weekend)
+	// //- Notion-Medium
 
 // nodemon server.js && maildev [ http://localhost:3000/account | http://localhost:1080/ ]
 
