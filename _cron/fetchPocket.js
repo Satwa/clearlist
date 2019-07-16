@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize('sqlite://./data/storage.sqlite')
+const sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false })
 const requestify = require('requestify')
 
 sequelize

@@ -1,6 +1,6 @@
 const Sequelize     = require('sequelize')
 const extract 		= require('meta-extractor')
-const sequelize     = new Sequelize('sqlite://./data/storage.sqlite')
+const sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false })
 
 console.log("- Initializing fetchTitle cron task..")
 

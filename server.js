@@ -7,12 +7,11 @@ const session 		= require('cookie-session')
 const ejs           = require('ejs')
 const urlExists 	= require('url-exists')
 
-const Twit 			= require('twit')
 const passport 		= require('passport')
 const Sequelize     = require('sequelize')
 const TwitterStrategy = require('passport-twitter').Strategy
 const PocketStrategy  = require('passport-pocket')
-const sequelize 	= new Sequelize('sqlite://data/storage.sqlite', { logging: false })
+const sequelize 	= new Sequelize(process.env.DATABASE_URL, { logging: false })
 const schedule 		= require('node-schedule')
 
 // const stripe 		= require("stripe")(process.env.STRIPE_KEY)
@@ -308,20 +307,21 @@ app.delete("/api/link/:id", (req, res) => {
 	}
 })
 
-// DOING: -
+// DOING:
+	// - Setup mail server for production
+	// - Setup database for production
 
 // TODO: ClearList for:
     // - UptimeRobot on server
+	// - Design Pocket link & account page
+	// [- Edit profile (?)
+    // - Subscription (Stripe)
+	// - Choose days
+	// - Send this next
+	// - Resend mail for later
+	// ////////////////////////////
     // - Telegram bot?
 	// - Twitter bot?
-	// - Design Pocket link & account page
-    // - Subscription (Stripe)
-		// - Just in case of premium feature - no idea yet
-	// - Setup mail server for production
-    // [- Resend mail for later
-    // [- Send this next
-	// [- Edit profile (?)
-	// ////////////////////////////
 	// IDEAS FOR LATER:
     // - Watchlist (on weekend)
     // //- Notion-Medium

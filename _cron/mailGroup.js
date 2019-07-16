@@ -1,5 +1,5 @@
 const Sequelize     = require('sequelize')
-const sequelize     = new Sequelize('sqlite://./data/storage.sqlite')
+const sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false })
 const nodemailer 	= require('nodemailer')
 const extractor 	= require('unfluff')
 const requestify 	= require('requestify')
@@ -48,9 +48,8 @@ Link.sync()
 
 /*
 TODO:
- - Titre du mail
- - Matomo analyse mail ouverture/lecture
- - CRON => toutes les heures, vérifier l'heure selon les timezone si 8h local
+ - Mail title
+ - Matomo analysis (is this mail being read and solving the problem?)
 */
 
 
