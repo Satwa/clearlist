@@ -133,8 +133,8 @@ passport.use(new TwitterStrategy({
 				id: profile.id,
 				displayName: profile.username,
 				schedule: schedule,
-				hour_preference: user.hour_preference,
-				days_preference: user.days_preference
+				hour_preference: user ? user.hour_preference : "0123456",
+				days_preference: user ? user.days_preference : 8
 			})
 		})
 	  }
