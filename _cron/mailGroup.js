@@ -94,6 +94,10 @@ User.findAll({where: {
 				},
 				order: sequelize.random()
 			}).then((link) => {
+				if(!link){
+					console.log("User has no more links waiting")
+					return
+				}
 				read(link.link, (err, article, meta) => {
 					ejs.renderFile("./_cron/template.ejs", {
 						title: article.title,
