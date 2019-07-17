@@ -134,7 +134,8 @@ passport.use(new TwitterStrategy({
 				displayName: profile.username,
 				schedule: schedule,
 				hour_preference: user ? user.hour_preference : "0123456",
-				days_preference: user ? user.days_preference : 8
+				days_preference: user ? user.days_preference : 8,
+				pocket_linked: user ? !!user.pocket_token : false
 			})
 		})
 	  }
@@ -166,8 +167,9 @@ passport.deserializeUser(function(id, done) {
 	        	displayName: user.screen_name,
 				schedule: user.schedule,
 				hour_preference: user.hour_preference,
-				days_preference: user.days_preference
-	      	})
+				days_preference: user.days_preference,
+				pocket_linked: !!user.pocket_token
+			  })
 	    }else{
 	    	console.log("no user")
 	    	done(err, null)

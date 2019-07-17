@@ -1,16 +1,16 @@
 <%- include('_header', {title: "Your reading list"}) %>
 	<div class="alert info" id="alert">	</div>
+
+	<div class="onboard">
+		<h1>What would you like to add today?</h1>
+		<form>
+			<input type="text" name="" id="linkField" placeholder="ElonMuskAbout2ReleaseTheNextBigThing.com">
+			<button id="addLink"><i class="fas fa-paper-plane" id="sendIcon"></i> <i id="waitIcon"
+					class="fa fa-spinner fa-spin"></i></button>
+		</form>
+	</div>
 </div> <!-- /container -->
-<div class="onboard account_onboard">
-	<h1>What would you like to add today?</h1>
-	<form>
-		<input type="text" name="" id="linkField" placeholder="ElonMuskAbout2ReleaseTheNextBigThing.com">
-		<button id="addLink"><i class="fas fa-paper-plane" id="sendIcon"></i> <i id="waitIcon"
-				class="fa fa-spinner fa-spin"></i></button>
-	</form>
-</div>
 <div class="account">
-	<hr>
 	<div class="container">
 		<h2>Account preferences</h2>
 	
@@ -18,7 +18,12 @@
 			<div class="col-12">
 					<!-- Username <input type="text"></div> -->
 					<!-- <br> -->
-					<a href="/login/pocket">Link Pocket</a>
+					<span class="pocket--status <%- user.pocket_linked ? 'active' : 'inactive' %>"></span> 
+					<%if(! user.pocket_linked){ %>
+						Your Pocket is not linked, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
+					<% }else{ %>
+						Your Pocket account is linked, your links are automatically imported!
+					<% } %>
 			</div>
 			<div class="col-12">
 				<form method="post" action="/account/update" style="text-align: center">
