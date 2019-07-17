@@ -293,6 +293,42 @@ app.post("/account/update", (req, res) => {
 
 	res.redirect("/account?toast=info&message=Preferences-successfully-updated!")
 })
+app.get('/account/forcepocket', (req, res) => {
+	if (!req.isAuthenticated()) {
+		res.redirect("/")
+		return
+	}
+	User.findOne({ where: { twitter_id: req.user.id } })
+		.then((user) => {
+			if (!user) {
+				res.redirect("/")
+				return
+			} 
+			requestify.request("https://getpocket.com/v3/get", {
+				method: "POST",
+				dataType: "json",
+				body: {
+					access_token: user.pocket_token,
+					consumer_key: process.env.POCKET_CONSUMER_KEY
+				}
+			}).then((response) => {
+				let data = response.getBody()
+				for (let item of Object.values(data.list)) {
+					Link.findOne({ where: { user_id: user.twitter_id, link: item.resolved_url } })
+						.then((link) => {
+							if (!link) {
+								Link.build({ link: item.resolved_url, user_id: user.twitter_id, title: item.resolved_title }).save()
+									.then((data) => {
+										console.log("[DEBUG] - Force importing link for " + user.screen_name)
+									})
+							}
+						})
+				}
+				res.redirect('/account?toast=info&message=Links-were-successfully-imported-from-Pocket.')
+			}).catch((err) => console.log(err))
+		})
+})
+
 
 app.get('/', function(request, response) {
 	if(request.isAuthenticated()){

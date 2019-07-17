@@ -22,7 +22,7 @@
 				<% if(!isLog){ %>
 					<a href="/login" class="join">Join with Twitter</a>
 				<% }else{ %>
-					<span><%= user.displayName %> | <a href="/logout" class="join"> Logout</a></span>
+					<span class="join"><%= user.displayName %> | <a href="/logout"> <i class="fas fa-sign-out-alt"></i></a></span>
 				<% } %>
 			</header>
 		</div>

@@ -20,9 +20,9 @@
 					<!-- <br> -->
 					<span class="pocket--status <%- user.pocket_linked ? 'active' : 'inactive' %>"></span> 
 					<% if(!user.pocket_linked){ %>
-						Your Pocket account is not linked, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
+						Your Pocket account is not synced, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
 					<% }else{ %>
-						Your Pocket account is linked, your links are automatically imported!
+						Your Pocket account is synced, your links are automatically imported! You can also <a href="/account/forcepocket">force the refresh by clicking here</a>.
 					<% } %>
 			</div>
 			<div class="col-12">
