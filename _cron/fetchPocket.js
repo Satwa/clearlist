@@ -52,9 +52,7 @@ User.findAll({
     }
 }).then((users) => {
     users.forEach((user) => {
-        if(user.pocket_token){
-            console.log("user has pocket token")
-        }else{
+        if(!user.pocket_token){
             console.log("user has no pocket token — cancelling")
             return
         }

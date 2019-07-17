@@ -24,8 +24,8 @@ if(process.env.STATUS){ // only defined on dev env.
 		port: process.env.MAIL_PORT,
 		secure: process.env.MAIL_SECURE, // true for 465, false for other ports
 		auth: {
-			user: process.env.MAIL_USER, // generated ethereal user
-			pass: process.env.MAIL_PASS // generated ethereal password
+			user: process.env.MAIL_USER,
+			pass: process.env.MAIL_PASS
 		}
 	})
 }
@@ -70,7 +70,7 @@ Link.sync()
 /*
 TODO:
  - Mail title
- - Matomo analysis (is this mail being read and solving the problem?)
+ - Matomo analytics (is this mail being read and solving the problem?)
 */
 
 
@@ -81,8 +81,8 @@ User.findAll({where: {
 	}
 }).then((users) => {
 	users.forEach((user) => {
-		let d = new Date() // WIP: Is this GMT+0?
-		d.setHours(d.getHours() + parseInt(user.schedule.split(":")[0]))
+		let d = new Date()
+		d.setHours(d.getUTCHours() + parseInt(user.schedule.split(":")[0]))
 
 		if(d.getHours() == user.hour_preference && user.days_preference.includes(d.getDay().toString())){
 			console.log("Time to send mail for: " + user.screen_name)
@@ -136,5 +136,6 @@ let sendMail = (email, subject, html, text) => {
 		if(err){
 			console.warn(err)
 		}
+		console.log(info)
 	})
 } // text comes from html

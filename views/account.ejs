@@ -19,8 +19,8 @@
 					<!-- Username <input type="text"></div> -->
 					<!-- <br> -->
 					<span class="pocket--status <%- user.pocket_linked ? 'active' : 'inactive' %>"></span> 
-					<%if(! user.pocket_linked){ %>
-						Your Pocket is not linked, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
+					<% if(!user.pocket_linked){ %>
+						Your Pocket account is not linked, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
 					<% }else{ %>
 						Your Pocket account is linked, your links are automatically imported!
 					<% } %>

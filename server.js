@@ -10,7 +10,6 @@ const requestify    = require('requestify')
 const passport 		= require('passport')
 const Sequelize     = require('sequelize')
 const TwitterStrategy = require('passport-twitter').Strategy
-const PocketStrategy  = require('passport-pocket')
 const sequelize 	= new Sequelize(process.env.DATABASE_URL, { logging: false })
 const schedule 		= require('node-schedule')
 
@@ -86,7 +85,7 @@ Link.belongsTo(User, {foreignKey: 'user_id'}) // Link is related a user
 User.hasMany(Link, {foreignKey: 'user_id'}) // User has many links
 
 
-User.sync() // {force: true} to reset data
+User.sync({ force: true }) // {force: true} to reset data
 Link.sync()
 
 
@@ -141,13 +140,6 @@ passport.use(new TwitterStrategy({
 	  }
 ))
 
-passport.use(new PocketStrategy({
-	 consumerKey: process.env.POCKET_CONSUMER_KEY,
-     callbackURL: CALLBACKURL + "login/pocket/callback"
-}, (username, token, done) => {
-	done(null, token)
-}))
-
 
 passport.serializeUser(function(user, done) {
 	done(null, user.id)
@@ -184,27 +176,51 @@ app.get("/logout", (req, res) => { req.logout(); res.redirect('/') })
 app.get("/login", passport.authenticate('twitter'))
 app.get("/login/callback", passport.authenticate('twitter', { successRedirect: '/account', failureRedirect: '/' }))
 
-app.get("/login/pocket", 
-	passport.authorize('pocket', { failureRedirect: '/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again' })
-)
+app.get("/login/pocket", (req, res) => {
+	requestify.request("https://getpocket.com/v3/oauth/request", {
+		method: "POST",
+		dataType: "json",
+		body: {
+			consumer_key: process.env.POCKET_CONSUMER_KEY,
+			redirect_uri: process.env.CALLBACK_URL + "login/pocket/callback"
+		}
+	}).then((response) => {
+		let data = response.getBody()
 
-app.get("/login/pocket/callback", 
-	passport.authorize('pocket', { failureRedirect: '/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again' }),
-	(req, res) => {
+		res.redirect(`https://getpocket.com/auth/authorize?request_token=${data.code}&redirect_uri=${process.env.CALLBACK_URL}login/pocket/callback?code=${data.code}`)
+	}).catch((err) => {
+		console.log(err)
+		res.redirect('/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again')
+	})
+
+})
+
+app.get("/login/pocket/callback", (req, res) => {
+	requestify.request("https://getpocket.com/v3/oauth/authorize", {
+		method: "POST",
+		dataType: "json",
+		body: {
+			consumer_key: process.env.POCKET_CONSUMER_KEY,
+			code: req.query.code
+		}
+	}).then((response) => {
+		let data = response.getBody()
+
 		User.findOne({ where: { twitter_id: req.user.id } })
 			.then((user) => {
 				if(!user){
-					console.log("NO USER")
+					console.log("No user")
+					res.redirect("/")
 					return
 				}
 
-				if (req.account !== undefined) {
+				if(data.access_token){
 					// Fetch from Pocket initially
 					requestify.request("https://getpocket.com/v3/get", {
 						method: "POST",
 						dataType: "json",
 						body: {
-							access_token: req.account,
+							access_token: data.access_token,
 							consumer_key: process.env.POCKET_CONSUMER_KEY
 						}
 					}).then((res) => {
@@ -227,13 +243,14 @@ app.get("/login/pocket/callback",
 
 					// Save token & redirect
 					user.update({
-						pocket_token: req.account
+						pocket_token: data.access_token
 					})
 					res.redirect("/account?toast=info&message=Successfully-linked-your-Pocket-account,-currently-syncing-your-list")
 				} else {
 					res.redirect("/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again")
 				}
 			})
+	})
 })
 
 
@@ -337,8 +354,8 @@ app.delete("/api/link/:id", (req, res) => {
 })
 
 // DOING:
-	// - Design Pocket link & account page
-	// - Landing Page
+	// - Design account page
+	// - Design landing Page
 
 // TODO:
 	// - Subscription (Stripe)
