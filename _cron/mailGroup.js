@@ -12,10 +12,9 @@ sequelize
 	    .then(() => console.log("Successfully logged into storage") )
 	    .catch((err) => console.error("Error logging into storage, error: " + err) )
 
-/* FOR DEV PURPOSE, configured for Maildev or Mailcatcher */
 var transporter
 if(process.env.STATUS){ // only defined on dev env.
-	transporter = nodemailer.createTransport({
+	transporter = nodemailer.createTransport({ // Configured for Maildev
 		port: 1025,
 		ignoreTLS: true
 	})
@@ -42,7 +41,15 @@ const User = sequelize.define("users", {
 	},
 	twitter_access: Sequelize.STRING,
 	twitter_secret: Sequelize.STRING,
-	schedule: Sequelize.STRING
+	schedule: Sequelize.STRING, // Timezone
+	hour_preference: {
+		type: Sequelize.INTEGER,
+		defaultValue: 8
+	},
+	days_preference: {
+		type: Sequelize.STRING,
+		defaultValue: "0123456" // 0=> Sunday
+	}
 })
 
 const Link = sequelize.define("links", {

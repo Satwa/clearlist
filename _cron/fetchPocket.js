@@ -18,7 +18,15 @@ const User = sequelize.define("users", {
     },
     twitter_access: Sequelize.STRING,
     twitter_secret: Sequelize.STRING,
-    schedule: Sequelize.STRING
+    schedule: Sequelize.STRING, // Timezone
+    hour_preference: {
+        type: Sequelize.INTEGER,
+        defaultValue: 8
+    },
+    days_preference: {
+        type: Sequelize.STRING,
+        defaultValue: "0123456" // 0=> Sunday
+    }
 })
 
 const Link = sequelize.define("links", {
