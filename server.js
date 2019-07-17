@@ -85,7 +85,7 @@ Link.belongsTo(User, {foreignKey: 'user_id'}) // Link is related a user
 User.hasMany(Link, {foreignKey: 'user_id'}) // User has many links
 
 
-User.sync({ force: true }) // {force: true} to reset data
+User.sync() // {force: true} to reset data
 Link.sync()
 
 
