@@ -369,6 +369,28 @@ app.post("/api/link/add", (req, res) => {
 	}
 })
 
+app.put("/api/link/:id", (req, res) => { // Update to unread
+	if (req.isAuthenticated()) {
+		console.log("Authentication OK.")
+
+		Link.findOne({ where: { user_id: req.user.id, id: req.params.id, state: { [Sequelize.Op.ne]: 0 } } })
+			.then((link) => {
+				if (!link) {
+					res.send(JSON.stringify({ success: false, message: "Link cannot be updated" }))
+				} else {
+					link.update({
+						state: 0
+					})
+					res.send(JSON.stringify({ success: true, message: 'OK' }))
+				}
+			})
+
+	} else {
+		console.log("Anonymous :(")
+		res.sendStatus(403)
+	}
+})
+
 app.delete("/api/link/:id", (req, res) => {
 	if(req.isAuthenticated()){
 		console.log("Authentication OK.")

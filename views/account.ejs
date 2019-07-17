@@ -147,10 +147,10 @@
 								</a>
 							</td>
 							<td class="arLinks">
-								<% if(!link.mail){ %>
+								<% if(!link.state){ %>
 									<i class="fas fa-trash-alt" onclick="_delete(<%= link.id %>)" id="l<%= link.id %>"></i>
 								<% }else{ %>
-									<!-- WIP -->
+									<i class="fas fa-redo-alt" onclick="_resend(<%= link.id %>)" id="rsl<%= link.id %>" title="Resend article"></i>
 								<% } %>
 							</td>
 						  </tr>
