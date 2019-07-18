@@ -101,23 +101,26 @@ let _addAlertMessage = (type, text, duration = 5000) => {
 }
 
 let _resend = (id) => {
-	fetch("/api/link/" + id, {
-		method: "PUT",
-		credentials: 'same-origin',
-		headers: {
-			"Content-Type": "application/json"
-		}
-	}).then((res) => { return res.json() })
-	.then((data) => {
-		if (data.success) {
-			_addAlertMessage("info", "This link has been added to the queue!")
-			document.querySelector(`#rsl${id}`).classList = "fas fa-trash-alt"
-			document.querySelector(`#rsl${id}`).id = "l" + id
-			document.querySelector(`#l${id}`).setAttribute("onclick", `_delete(${id})`)
-		} else {
-			_addAlertMessage("warning", "It seems like this link can't be updated..")
-		}
-	})
+	let confirm = confirm("Do you want to add this link to the queue?")
+	if(confirm){
+		fetch("/api/link/" + id, {
+			method: "PUT",
+			credentials: 'same-origin',
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}).then((res) => { return res.json() })
+		.then((data) => {
+			if (data.success) {
+				_addAlertMessage("info", "This link has been added to the queue!")
+				document.querySelector(`#rsl${id}`).classList = "fas fa-trash-alt"
+				document.querySelector(`#rsl${id}`).id = "l" + id
+				document.querySelector(`#l${id}`).setAttribute("onclick", `_delete(${id})`)
+			} else {
+				_addAlertMessage("warning", "It seems like this link can't be updated..")
+			}
+		})
+	}
 }
 
 let _delete = (id) => {

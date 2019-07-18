@@ -338,6 +338,11 @@ app.get('/', function(request, response) {
 	response.render('home')
 })
 
+app.get("/legal", (req, res) => {
+	res.render('legal-notices')
+})
+
+
 app.post("/api/link/add", (req, res) => {
 	if(req.isAuthenticated()){
 		let link = req.body.link
@@ -413,22 +418,16 @@ app.delete("/api/link/:id", (req, res) => {
 
 // DOING:
 	// - Design account page
-	// - Design landing Page
+	// - Send this next
 
 // TODO:
 	// - Subscription (Stripe)
 		// - Choose days
 		// - Send this next
 		// - Resend mail for later
-
-// IDEAS FOR LATER:
-	// - Telegram bot?
-	// - Twitter bot?
-	// - Watchlist (on weekend)
-	// //- Notion-Medium
+	// - Privacy policy & ToS
 
 // nodemon server.js && maildev [ http://localhost:3000/account | http://localhost:1080/ ]
-
 app.listen(process.env.PORT, () => {
   console.log('Server up and running on port ' + process.env.PORT)
 }) 

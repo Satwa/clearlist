@@ -87,7 +87,6 @@ header a{
 	color: black;
 }
 .home .join--cta:hover{
-	background: #a8ff3e;
 	-webkit-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
 	-moz-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
 	box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
@@ -96,6 +95,9 @@ header a{
 .onboard{
 	margin-top:50px;
 	text-align: center;
+}
+.onboard.final{
+	margin: 100px 0;
 }
 
 .onboard h1{
@@ -185,6 +187,32 @@ hr {
 [type="checkbox"]:checked + label.day_checkbox_label {
 	background: #00EBB8;
 }
+.account input[type="submit"].settings{
+	border: none;
+	cursor: pointer;
+	margin-bottom: 25px;
+	text-decoration: none;
+	padding: 10px;
+	border-radius: 8px;
+	background: #00EBB8;
+	transition: all .2s linear;
+	font-size: 14px;
+	color: black;
+}
+.account input[type="submit"].settings:hover{
+	-webkit-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
+	-moz-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
+	box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
+}
+.account select{
+	width: 80%;
+	padding: 10px;
+	font-size: 12px;
+}
+.account label[for="timezone_offset"], .account label[for="hour_preference"]{
+	margin-top: 10px;	
+	display: inline-block
+}
 
 .account table{
 	width: 100%;
@@ -221,4 +249,22 @@ hr {
 	border-radius: 8px;
 	padding: 16px;
 	display: none;
+}
+
+.text-right{
+	text-align: right;
+}
+.text-left{
+	text-align: left;
+}
+
+footer {
+	padding: 20px;
+	display: flex;
+	color: #FFF;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+footer a{
+	margin: 0 10px;
 }
