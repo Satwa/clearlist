@@ -111,7 +111,7 @@ User.findAll({where: {
 						}
 						
 						link.update({
-							state: true
+							state: 1
 						})
 						
 						article.close()
