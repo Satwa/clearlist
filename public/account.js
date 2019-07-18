@@ -101,8 +101,8 @@ let _addAlertMessage = (type, text, duration = 5000) => {
 }
 
 let _resend = (id) => {
-	let confirm = confirm("Do you want to add this link to the queue?")
-	if(confirm){
+	let r = confirm("Do you want to add this link to the queue?")
+	if(r){
 		fetch("/api/link/" + id, {
 			method: "PUT",
 			credentials: 'same-origin',
