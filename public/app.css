@@ -1,7 +1,7 @@
 html, body{
 	padding:0;
 	margin: 0;
-	background-image: linear-gradient(to left bottom, #2cbb1f, #52cc1c, #72dd16, #91ee0e, #b0ff00);
+	background: #6b778d;
 }
 *{
 	box-sizing: border-box;
@@ -9,14 +9,16 @@ html, body{
 	font-style: normal;
 	font-weight: 300;
 }
-/* https://mycolor.space/gradient?ori=to+left+bottom&hex=%232CBB1F&hex2=%23B0FF00&sub=1 */
+a { color: inherit}
+
 header{
 	padding: 10;
 	text-align:center;
 	display: flex;
     justify-content: space-between;
     align-items: center;
-    font-style: normal;
+	font-style: normal;
+	color: white;
 }
 header h1{
 	cursor: pointer;
@@ -79,11 +81,13 @@ header a{
 	text-decoration: none;
 	padding: 10px;
 	border-radius: 8px;
-	background: #72dd16;
+	background: #00EBB8;
 	transition: all .2s linear;
+	font-size: 20px;
+	color: black;
 }
 .home .join--cta:hover{
-	background: #b0ff00;
+	background: #a8ff3e;
 	-webkit-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
 	-moz-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
 	box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
@@ -108,7 +112,7 @@ header a{
 	line-height: 27px; font-size: 18px;
 	padding: 5px; border:none;
 	background: none; 
-	border: 2px solid lightgreen;
+	border: 2px solid #6b778d;
 	border-radius: 0 5px;
 	outline: 0;
 }
@@ -117,17 +121,17 @@ header a{
 	line-height: 27px; font-size: 18px;
 	background: none; 
 	border:none;
-	border: 2px solid lightgreen;
-	border-left: 4px solid lightgreen;
-	border-bottom: 4px solid lightgreen;
+	border: 2px solid #6b778d;
+	border-left: 4px solid #6b778d;
+	border-bottom: 4px solid #6b778d;
 	border-radius: 0 5px;
 	cursor:pointer;
 }
 .onboard button:active{
 	border:none;
-	background:lightgreen;
-	border-left: 2px solid lightgreen;
-	border-bottom: 3px solid lightgreen;
+	background:#6b778d;
+	border-left: 2px solid #6b778d;
+	border-bottom: 3px solid #6b778d;
 }
 
 .account {
@@ -143,7 +147,7 @@ header a{
 	display: inline-block;
 }
 .pocket--status.active{
-	background: #91ee0e;
+	background: #00EBB8;
 }
 .pocket--status.inactive{
 	background: #eec10e;
@@ -179,7 +183,7 @@ hr {
 }
 
 [type="checkbox"]:checked + label.day_checkbox_label {
-	background: #91ee0e;
+	background: #00EBB8;
 }
 
 .account table{
@@ -189,14 +193,15 @@ hr {
 .account table tr th{
 	font-size:20px;
 	background: #EEE;
-	color: black;
 	cursor: default;
+	color: black;
 }
 .account table td, .account table th {
-    padding: 8px;
+	padding: 8px;
 }
+.account table tr td a{ color: black; }
 .account table tr:nth-child(even){background-color: #f2f2f2;}
-.account table tr:hover {background-color: #91ee0e;}
+.account table tr:hover {background-color: #00EBB8;}
 .account table tr .arLinks{
 	display:flex; 
 	justify-content: space-around;
