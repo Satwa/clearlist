@@ -16,6 +16,10 @@ const Link = sequelize.define("links", {
 	state: {
 		type: Sequelize.INTEGER, 
 		defaultValue: 0 //0: to send / / 1: sent
+	},
+	prioritize: {
+		type: Sequelize.INTEGER,
+		defaultValue: 0 // don't prioritze
 	}
 })
 Link.sync()

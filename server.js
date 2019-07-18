@@ -78,6 +78,10 @@ const Link = sequelize.define("links", {
 	state: {
 		type: Sequelize.INTEGER, 
 		defaultValue: 0 //0: to send || 1: sent
+	},
+	prioritize: {
+		type: Sequelize.INTEGER,
+		defaultValue: 0 // don't prioritze
 	}
 })
 
@@ -391,6 +395,38 @@ app.put("/api/link/:id", (req, res) => { // Update to unread
 			})
 
 	} else {
+		console.log("Anonymous :(")
+		res.sendStatus(403)
+	}
+})
+
+app.patch("/api/link/:id", (req, res) => {
+	if(req.isAuthenticated()){
+		console.log("Authentication OK.")
+
+		Link.findOne({ where: { user_id: req.user.id, state: 0, prioritize: 1 } }) // Find a link user has prioritized and remove his priority
+			.then((link) => {
+				if(link && link.id != req.params.id){
+					link.update({
+						prioritize: 0
+					})
+				}
+
+				Link.findOne({ where: { user_id: req.user.id, id: req.params.id, state: 0 } }) // Update the link user wants to receive next
+					.then((link) => {
+						if (!link) {
+							res.send(JSON.stringify({ success: false, message: "Link cannot be prioritized" }))
+						} else {
+							link.update({
+								prioritize: 1
+							})
+
+							res.send(JSON.stringify({ success: true, message: 'OK' }))
+						}
+					})
+			})
+
+	}else{
 		console.log("Anonymous :(")
 		res.sendStatus(403)
 	}

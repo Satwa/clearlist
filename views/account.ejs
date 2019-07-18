@@ -143,6 +143,8 @@
 							<td>
 								<% if(link.state){ %>
 									<i class="fas fa-check" title="Sent on <%= link.updatedAt %>"></i>
+								<% }else if(link.prioritize){ %> 
+									<i class="fas fa-stopwatch" title="This link is programmed to be sent next"></i>
 								<% }else{ %> 
 									<i class="fas fa-times" title="This link is on queue, soon in your inbox"></i>
 								<% } %>
@@ -158,6 +160,9 @@
 							</td>
 							<td class="arLinks">
 								<% if(!link.state){ %>
+									<% if(!link.prioritize){ %> 
+										<i class="fas fa-fast-forward" onclick="_prioritize(<%= link.id %>)" id="p<%= link.id %>"></i> 
+									<% } %>
 									<i class="fas fa-trash-alt" onclick="_delete(<%= link.id %>)" id="l<%= link.id %>"></i>
 								<% }else{ %>
 									<i class="fas fa-redo-alt" onclick="_resend(<%= link.id %>)" id="rsl<%= link.id %>" title="Resend article"></i>

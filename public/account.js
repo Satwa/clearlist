@@ -100,6 +100,27 @@ let _addAlertMessage = (type, text, duration = 5000) => {
 	}, duration)
 }
 
+let _prioritize = (id) => {
+	let r = confirm("Do you want to send this link next and override current priority (if one is set)?")
+	if(r){
+		fetch('/api/link/' + id, {
+			method: "PATCH",
+			credentials: 'same-origin',
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}).then((res) => { return res.json() })
+		.then((data) => {
+			if (data.success) {
+				_addAlertMessage("info", "This link has been prioritized!")
+				document.querySelector(`#p${id}`).style.display = "none"
+			} else {
+				_addAlertMessage("warning", "It seems like this link can't be prioritized..")
+			}
+		})
+	}
+}
+
 let _resend = (id) => {
 	let r = confirm("Do you want to add this link to the queue?")
 	if(r){
