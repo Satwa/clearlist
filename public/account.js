@@ -115,7 +115,11 @@ let _prioritize = (id) => {
 				_addAlertMessage("info", "This link has been prioritized!")
 				document.querySelector(`#p${id}`).style.display = "none"
 			} else {
-				_addAlertMessage("warning", "It seems like this link can't be prioritized..")
+				if(data.message == "premium"){
+					_addAlertMessage("warning", "Doing this requires you to be premium for the price of a coffee")
+				}else{
+					_addAlertMessage("warning", "It seems like this link can't be prioritized..")
+				}
 			}
 		})
 	}
@@ -138,7 +142,11 @@ let _resend = (id) => {
 				document.querySelector(`#rsl${id}`).id = "l" + id
 				document.querySelector(`#l${id}`).setAttribute("onclick", `_delete(${id})`)
 			} else {
-				_addAlertMessage("warning", "It seems like this link can't be updated..")
+				if (data.message == "premium") {
+					_addAlertMessage("warning", "Doing this requires you to be premium for the price of a coffee")
+				} else {
+					_addAlertMessage("warning", "It seems like this link can't be updated..")
+				}
 			}
 		})
 	}

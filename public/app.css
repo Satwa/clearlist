@@ -44,23 +44,23 @@ header a{
 	border-bottom: 1px #EEE solid;
 }
 
-.home{
+.home, .premium{
 	background: #FFF;
 }
-.home .text{
+.home .text, .premium .text{
 	font-size: 20px;
 	text-align: center;
 }
-.home .illustration{
+.home .illustration, .premium .illustration{
 	margin: 0 auto;
 	text-align: center;
 }
-.home .illustration .emoji{
+.home .illustration .emoji, .premium .illustration .emoji{
 	display: block;
 	text-align: center;
 	font-size: 60px;
 }
-.home .illustration img{
+.home .illustration img, .premium .illustration img{
 	width: 100%;
 	border-radius: 8px;
 	-webkit-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
@@ -75,18 +75,19 @@ header a{
 	text-align: center;
 }
 
-.home .join--cta{
+.join--cta{
 	display: inline-block;
 	margin-top: 25px;
 	text-decoration: none;
 	padding: 10px;
 	border-radius: 8px;
-	background: #00EBB8;
+	background: #57FFDB;
 	transition: all .2s linear;
 	font-size: 20px;
 	color: black;
 }
-.home .join--cta:hover{
+.join--cta:hover{
+	background: #57FFDB;
 	-webkit-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
 	-moz-box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
 	box-shadow: 5px 5px 17px -10px rgb(112, 112, 112);
@@ -149,7 +150,7 @@ header a{
 	display: inline-block;
 }
 .pocket--status.active{
-	background: #00EBB8;
+	background: #57FFDB;
 }
 .pocket--status.inactive{
 	background: #eec10e;
@@ -185,7 +186,7 @@ hr {
 }
 
 [type="checkbox"]:checked + label.day_checkbox_label {
-	background: #00EBB8;
+	background: #57FFDB;
 }
 .account input[type="submit"].settings{
 	border: none;
@@ -194,7 +195,7 @@ hr {
 	text-decoration: none;
 	padding: 10px;
 	border-radius: 8px;
-	background: #00EBB8;
+	background: #57FFDB;
 	transition: all .2s linear;
 	font-size: 14px;
 	color: black;
@@ -229,7 +230,7 @@ hr {
 }
 .account table tr td a{ color: black; }
 .account table tr:nth-child(even){background-color: #f2f2f2;}
-.account table tr:hover {background-color: #00EBB8;}
+.account table tr:hover {background-color: 57FFDB;}
 .account table tr .arLinks{
 	display:flex; 
 	justify-content: space-around;
@@ -251,6 +252,12 @@ hr {
 	display: none;
 }
 
+
+.center {
+	text-align: center;
+	display: inline-block;
+	margin: 0 auto;
+}
 .text-right{
 	text-align: right;
 }

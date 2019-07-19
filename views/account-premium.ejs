@@ -1,0 +1,84 @@
+    <%- include('_header', {title: "Premium"}) %>
+    <div class="alert info" id="alert"> </div>
+
+    <div class="onboard">
+        <h1 style="color: white;">Thanks for looking at Premium! 🙌</h1>
+    </div>
+</div> <!-- /container -->
+
+<div class="premium">
+    <div class="container">
+        <div class="row vertical-flex">
+            <div class="col-12-sm col-6 text">
+                <h2>Adapt to your timetable</h2>
+                <p>ClearList Premium allows you to choose days you want to receive an article, and disable those you are busy.</p>
+            </div>
+            <div class="col-12-sm col-6 illustration">
+                <img src="/p_favorite_days.png" alt="Timetable-understanding">
+            </div>
+        </div>
+        <div class="row vertical-flex">
+            <div class="col-12-sm col-6 illustration">
+                <img src="/p_prioritize.png" alt="Send your preference">
+            </div>
+            <div class="col-12-sm col-6 text">
+                <h2>One article above all</h2>
+                <p>Do you know what article you want to receive next? ClearList Premium allows you to put it on top of others and receive it right in your inbox next time.</p>
+            </div>
+        </div>
+        <div class="row vertical-flex">
+            <div class="col-12-sm col-6 text">
+                <h2>You missed an email?</h2>
+                <p>No worries, you can add it back to the queue and it will be sent another time!</p>
+            </div>
+            <div class="col-12-sm col-6 illustration">
+                <img src="/p_resend.png" alt="Send again">
+            </div>
+        </div><div class="row vertical-flex">
+            <div class="col-12-sm col-6 illustration">
+                <span class="emoji">👨‍🎓</span>
+            </div>
+            <div class="col-12-sm col-6 text">
+                <h2>Support me</h2>
+                <p>I am a student indie maker living in Paris, France. By subscribing, you will benefit from all the mentioned features plus have the good karma of helping a student trying to make great products!</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <!-- Why you should be Premium? // thanks for being premium -->
+                <span class="pocket--status <%- user.isPremium ? 'active' : 'inactive' %>"></span>
+                <% if(!user.isPremium){ %>
+                    You are not premium, are you convinced now?
+                <% }else{ %>
+                    Thanks for being premium, mate! 💖
+                <% } %>
+            </div>
+
+            <div class="col-12 center">
+                <!-- Cancel / Subscribe -->
+                <% if(!user.isPremium){ %> 
+                    <a href="#" title="Subscribe" onclick="_proceed()" class="join--cta">Become a Premium member for only €2.99/mo</a>
+                <% }else{ %>
+                    <a href="#" title="Cancel" onclick="_proceed()" class="join--cta">Cancel subscription</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <%- include('_footer') %>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe("<%= stripe_key %>")
+
+    let _proceed = () => {
+        stripe.redirectToCheckout({
+            sessionId: "<%= session_id %>"
+        }).then(function (result) {
+            alert(result.error.message) // WIP
+        });
+    }
+
+</script>

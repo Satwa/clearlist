@@ -13,6 +13,16 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,500" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="/simple-grid.min.css">
 	<link rel="stylesheet" type="text/css" href="/app.css">
+	<style>
+		<% if(isLog && !user.isPremium){ %> 
+			.premium_features{
+				filter: blur(2px);
+			}
+			.premium_features input, .premium_features label, i.premium_features {
+				pointer-events:none;
+			}
+		<% } %>
+	</style>
 </head>
 <body>
 	<div class="container">

@@ -49,7 +49,9 @@ const User = sequelize.define("users", {
 	days_preference: {
 		type: Sequelize.STRING,
 		defaultValue: "0123456" // 0=> Sunday
-	}
+	},
+	stripe_customer_id: Sequelize.STRING,
+	stripe_subscription_id: Sequelize.STRING
 })
 
 const Link = sequelize.define("links", {
@@ -88,7 +90,11 @@ User.findAll({where: {
 		let d = new Date()
 		d.setHours(d.getUTCHours() + parseInt(user.schedule.split(":")[0]))
 
-		if(d.getHours() == user.hour_preference && user.days_preference.includes(d.getDay().toString())){
+		if(d.getHours() == user.hour_preference){
+			if (user.stripe_subscription_id != null && !user.days_preference.includes(d.getDay().toString())){ // If premium and day is busy (= not activated)
+				console.log(user.screen_name + " is a Premium user and won't receive a mail")
+				return
+			}
 			console.log("Time to send mail for: " + user.screen_name)
 
 			Link.findOne({
@@ -96,7 +102,7 @@ User.findAll({where: {
 					state: 0,
 					user_id: user.twitter_id
 				},
-				order: sequelize.random()
+				order: ((user.stripe_subscription_id != null) ? [['prioritize', 'DESC']] : sequelize.random())
 			}).then((link) => {
 				if(!link){
 					console.log("User has no more links waiting")

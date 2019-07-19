@@ -13,10 +13,14 @@ const TwitterStrategy = require('passport-twitter').Strategy
 const sequelize 	= new Sequelize(process.env.DATABASE_URL, { logging: false })
 const schedule 		= require('node-schedule')
 
-// const stripe 		= require("stripe")(process.env.STRIPE_KEY)
+const stripe 		= require("stripe")(process.env.STRIPE_KEY)
 const CALLBACKURL   = process.env.CALLBACK_URL
 
 // Scheduler
+schedule.scheduleJob("0 1 * * *", () => {
+	require("./_cron/stillPremium") // check subscriptions every day
+})
+
 schedule.scheduleJob("01 * * * *", () => {
 	require("./_cron/fetchPocket") // fetch from Pocket every hour
 
@@ -29,6 +33,7 @@ schedule.scheduleJob("*/2 * * * *", () => {
 app.set('view engine', "ejs")
 app.use(express.static('public'))
 
+app.use("/api/stripe/webhook", bodyParser.raw({ type: 'application/json' }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session({
@@ -69,7 +74,9 @@ const User = sequelize.define("users", {
 	days_preference: {
 		type: Sequelize.STRING,
 		defaultValue: "0123456" // 0=> Sunday
-	}
+	},
+	stripe_customer_id: Sequelize.STRING,
+	stripe_subscription_id: Sequelize.STRING
 })
 
 const Link = sequelize.define("links", {
@@ -138,7 +145,8 @@ passport.use(new TwitterStrategy({
 				schedule: schedule,
 				hour_preference: user ? user.hour_preference : "0123456",
 				days_preference: user ? user.days_preference : 8,
-				pocket_linked: user ? !!user.pocket_token : false
+				pocket_linked: user ? !!user.pocket_token : false,
+				isPremium: user ? (user.stripe_subscription_id != null) : false
 			})
 		})
 	  }
@@ -164,7 +172,8 @@ passport.deserializeUser(function(id, done) {
 				schedule: user.schedule,
 				hour_preference: user.hour_preference,
 				days_preference: user.days_preference,
-				pocket_linked: !!user.pocket_token
+				pocket_linked: !!user.pocket_token,
+				isPremium: (user.stripe_subscription_id != null)
 			  })
 	    }else{
 	    	console.log("no user")
@@ -269,6 +278,57 @@ app.get("/account", (req, res) => {
 			res.render("account", { links: links, preferences: { days: req.user.days_preference, hour: req.user.hour_preference } })
 		})
 })
+
+app.get("/account/premium", (req, res) => {
+	if(!req.isAuthenticated()){
+		res.redirect("/")
+		return
+	}
+	User.findOne({ where: { twitter_id: req.user.id } })
+		.then((user) => {
+			if (!user) {
+				res.redirect("/")
+				return
+			}
+
+			stripe.checkout.sessions.create({
+				success_url: process.env.CALLBACK_URL + 'account?toast=thanks&message=Thanks-for-subscribing-and-supporting-me,-I-hope-this-product-is-helpful-and-feel-free-to-tell-me-how-to-improve-it!',
+				cancel_url: process.env.CALLBACK_URL + 'account?toast=info&message=Something-wrong-happened-while-processing-the-checkout,-please-retry!',
+				payment_method_types: ['card'],
+				subscription_data: {
+					items: [{
+						plan: process.env.STRIPE_PLAN_ID
+					}]
+				},
+				client_reference_id: user.twitter_id,
+				customer_email: user.email
+			}, function (err, session) {
+				if(err){
+					res.render("account-premium", { session_id: null, stripe_key: process.env.STRIPE_PUBLIC_KEY })
+					return
+				}
+				res.render("account-premium", { session_id: session.id, stripe_key: process.env.STRIPE_PUBLIC_KEY })
+			})
+		})
+})
+
+app.get("/account/premium/cancel", (req, res) => {
+	if (!req.isAuthenticated()) {
+		res.redirect("/")
+		return
+	}
+	User.findOne({ where: { twitter_id: req.user.id, stripe_subscription_id: { [Sequelize.Op.ne]: null } } })
+		.then((user) => {
+			if (!user) {
+				res.redirect("/")
+				return
+			}
+
+			stripe.subscriptions.update(user.stripe_subscription_id, { cancel_at_period_end: true })
+			res.redirect('/account?toast=info&message=Your-subscription-will-be-cancelled-at-the-end-of-the-period-and-won\'t-be-renewed.')
+		})
+})
+
 app.post("/account/update", (req, res) => {
 	if(!req.isAuthenticated() || !req.body.timezone_offset){
 	    res.redirect("/")
@@ -288,11 +348,16 @@ app.post("/account/update", (req, res) => {
 				console.log("NO USER")
 				return
 			}
-			user.update({
+			let updates = {
 				schedule: req.body.timezone_offset,
-				days_preference: days,
 				hour_preference: req.body.hour_preference
-			})
+			}
+			
+			if(user.stripe_subscription_id != null){
+				// isPremium
+				updates["days_preference"] = days
+			}
+			user.update(updates)
 		})
 
 	res.redirect("/account?toast=info&message=Preferences-successfully-updated!")
@@ -381,19 +446,24 @@ app.post("/api/link/add", (req, res) => {
 app.put("/api/link/:id", (req, res) => { // Update to unread
 	if (req.isAuthenticated()) {
 		console.log("Authentication OK.")
-
-		Link.findOne({ where: { user_id: req.user.id, id: req.params.id, state: { [Sequelize.Op.ne]: 0 } } })
-			.then((link) => {
-				if (!link) {
-					res.send(JSON.stringify({ success: false, message: "Link cannot be updated" }))
-				} else {
-					link.update({
-						state: 0
-					})
-					res.send(JSON.stringify({ success: true, message: 'OK' }))
+		User.findOne({ where: { twitter_id: req.user.id } })
+			.then((user) => {
+				if (user.stripe_subscription_id != null) {
+					Link.findOne({ where: { user_id: req.user.id, id: req.params.id, state: { [Sequelize.Op.ne]: 0 } } })
+						.then((link) => {
+							if (!link) {
+								res.send(JSON.stringify({ success: false, message: "Link cannot be updated" }))
+							} else {
+								link.update({
+									state: 0
+								})
+								res.send(JSON.stringify({ success: true, message: 'OK' }))
+							}
+						})
+				}else{
+					res.send(JSON.stringify({ success: false, message: 'premium' }))
 				}
 			})
-
 	} else {
 		console.log("Anonymous :(")
 		res.sendStatus(403)
@@ -404,28 +474,34 @@ app.patch("/api/link/:id", (req, res) => {
 	if(req.isAuthenticated()){
 		console.log("Authentication OK.")
 
-		Link.findOne({ where: { user_id: req.user.id, state: 0, prioritize: 1 } }) // Find a link user has prioritized and remove his priority
-			.then((link) => {
-				if(link && link.id != req.params.id){
-					link.update({
-						prioritize: 0
-					})
+		User.findOne({ where: { twitter_id: req.user.id } })
+			.then((user) => {
+				if(user.stripe_subscription_id != null){
+					Link.findOne({ where: { user_id: req.user.id, state: 0, prioritize: 1 } }) // Find a link user has prioritized and remove his priority
+						.then((link) => {
+							if (link && link.id != req.params.id) {
+								link.update({
+									prioritize: 0
+								})
+							}
+
+							Link.findOne({ where: { user_id: req.user.id, id: req.params.id, state: 0 } }) // Update the link user wants to receive next
+								.then((link) => {
+									if (!link) {
+										res.send(JSON.stringify({ success: false, message: "Link cannot be prioritized" }))
+									} else {
+										link.update({
+											prioritize: 1
+										})
+
+										res.send(JSON.stringify({ success: true, message: 'OK' }))
+									}
+								})
+						})
+				}else{
+					res.send(JSON.stringify({ success: false, message: 'premium' }))
 				}
-
-				Link.findOne({ where: { user_id: req.user.id, id: req.params.id, state: 0 } }) // Update the link user wants to receive next
-					.then((link) => {
-						if (!link) {
-							res.send(JSON.stringify({ success: false, message: "Link cannot be prioritized" }))
-						} else {
-							link.update({
-								prioritize: 1
-							})
-
-							res.send(JSON.stringify({ success: true, message: 'OK' }))
-						}
-					})
 			})
-
 	}else{
 		console.log("Anonymous :(")
 		res.sendStatus(403)
@@ -452,16 +528,39 @@ app.delete("/api/link/:id", (req, res) => {
 	}
 })
 
-// DOING:
-	// - Design account page
-	// - Send this next
+app.post('/api/stripe/webhook', (request, response) => {
+	const sig = request.headers['stripe-signature'];
 
-// TODO:
-	// - Subscription (Stripe)
-		// - Choose days
-		// - Send this next
-		// - Resend mail for later
-	// - Privacy policy & ToS
+	let event;
+
+	try {
+		event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_ENDPOINT_SECRET);
+	} catch (err) {
+		console.log(err)
+		return response.status(400).send(`Webhook Error: ${err.message}`);
+	}
+
+	// Handle the checkout.session.completed event
+	if (event.type === 'checkout.session.completed') {
+		const session = event.data.object;
+		
+		User.findOne({ where: { twitter_id: session.client_reference_id } })
+			.then((user) => {
+				if(!user){
+					console.log("ISSUE: Subscription to undefined user...")
+					return
+				}
+				console.log(user.screen_name + " has completed subscription")
+				user.update({
+					stripe_customer_id: session.customer,
+					stripe_subscription_id: session.subscription
+				})
+			})
+	}
+
+	// Return a response to acknowledge receipt of the event
+	response.json({ received: true });
+});
 
 // nodemon server.js && maildev [ http://localhost:3000/account | http://localhost:1080/ ]
 app.listen(process.env.PORT, () => {

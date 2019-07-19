@@ -26,7 +26,9 @@ const User = sequelize.define("users", {
     days_preference: {
         type: Sequelize.STRING,
         defaultValue: "0123456" // 0=> Sunday
-    }
+    },
+    stripe_customer_id: Sequelize.STRING,
+    stripe_subscription_id: Sequelize.STRING
 })
 
 const Link = sequelize.define("links", {
@@ -51,7 +53,7 @@ Link.sync()
 User.findAll({
     where: {
         schedule: {
-            [Sequelize.Op.ne]: null // NOT NULL // TODO: AND SUBSCRIBED
+            [Sequelize.Op.ne]: null
         }
     }
 }).then((users) => {

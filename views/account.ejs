@@ -16,25 +16,34 @@
 	
 		<div class="row">
 			<div class="col-12">
-					<!-- Username <input type="text"></div> -->
-					<!-- <br> -->
-					<span class="pocket--status <%- user.pocket_linked ? 'active' : 'inactive' %>"></span> 
-					<% if(!user.pocket_linked){ %>
-						Your Pocket account is not synced, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
-					<% }else{ %>
-						Your Pocket account is synced, your links are automatically imported! You can also <a href="/account/forcepocket">force the refresh by clicking here</a>.
-					<% } %>
+				<span class="pocket--status <%- user.pocket_linked ? 'active' : 'inactive' %>"></span> 
+				<% if(!user.pocket_linked){ %>
+					Your Pocket account is not synced, you can automate your list by <a href="/login/pocket">linking Pocket now</a>
+				<% }else{ %>
+					Your Pocket account is synced, your links are automatically imported! You can also <a href="/account/forcepocket">force the refresh by clicking here</a>.
+				<% } %>
+				
+				<br>
+
+				<span class="pocket--status <%- user.isPremium ? 'active' : 'inactive' %>"></span>
+				<% if(!user.isPremium){ %>
+				You are not a premium member yet, <a href="/account/premium">check out what features it unlocks</a>!
+				<% }else{ %>
+				Thanks for being premium, mate! 💖 You can <a href="/account/premium">manage your subscription here</a>.
+				<% } %>
 			</div>
 			<div class="col-12">
 				<form method="post" action="/account/update" style="text-align: center">
-	
-					<input type="checkbox" name="1" id="1" class="day_checkbox"> <label for="1" class="day_checkbox_label">Monday</label>
-					<input type="checkbox" name="2" id="2" class="day_checkbox"> <label for="2" class="day_checkbox_label">Tuesday</label>
-					<input type="checkbox" name="3" id="3" class="day_checkbox"> <label for="3" class="day_checkbox_label">Wednesday</label>
-					<input type="checkbox" name="4" id="4" class="day_checkbox"> <label for="4" class="day_checkbox_label">Thursday</label>
-					<input type="checkbox" name="5" id="5" class="day_checkbox"> <label for="5" class="day_checkbox_label">Friday</label>
-					<input type="checkbox" name="6" id="6" class="day_checkbox"> <label for="6" class="day_checkbox_label">Saturday</label>
-					<input type="checkbox" name="0" id="0" class="day_checkbox"> <label for="0" class="day_checkbox_label">Sunday</label>
+					
+					<div class="day_checkbox_container premium_features">
+						<input type="checkbox" name="1" id="1" class="day_checkbox"> <label for="1" class="day_checkbox_label">Monday</label>
+						<input type="checkbox" name="2" id="2" class="day_checkbox"> <label for="2" class="day_checkbox_label">Tuesday</label>
+						<input type="checkbox" name="3" id="3" class="day_checkbox"> <label for="3" class="day_checkbox_label">Wednesday</label>
+						<input type="checkbox" name="4" id="4" class="day_checkbox"> <label for="4" class="day_checkbox_label">Thursday</label>
+						<input type="checkbox" name="5" id="5" class="day_checkbox"> <label for="5" class="day_checkbox_label">Friday</label>
+						<input type="checkbox" name="6" id="6" class="day_checkbox"> <label for="6" class="day_checkbox_label">Saturday</label>
+						<input type="checkbox" name="0" id="0" class="day_checkbox"> <label for="0" class="day_checkbox_label">Sunday</label>
+					</div>
 	
 					<div class="row">
 						<div class="col-6 text-right">
@@ -161,11 +170,11 @@
 							<td class="arLinks">
 								<% if(!link.state){ %>
 									<% if(!link.prioritize){ %> 
-										<i class="fas fa-fast-forward" onclick="_prioritize(<%= link.id %>)" id="p<%= link.id %>"></i> 
+										<i class="fas fa-fast-forward premium_features" onclick="_prioritize(<%= link.id %>)" id="p<%= link.id %>"></i> 
 									<% } %>
 									<i class="fas fa-trash-alt" onclick="_delete(<%= link.id %>)" id="l<%= link.id %>"></i>
 								<% }else{ %>
-									<i class="fas fa-redo-alt" onclick="_resend(<%= link.id %>)" id="rsl<%= link.id %>" title="Resend article"></i>
+									<i class="fas fa-redo-alt premium_features" onclick="_resend(<%= link.id %>)" id="rsl<%= link.id %>" title="Resend article"></i>
 								<% } %>
 							</td>
 						  </tr>
