@@ -279,6 +279,32 @@ app.get("/account", (req, res) => {
 		})
 })
 
+app.get('/account/dump', (req, res) => {
+	if (!req.isAuthenticated()) {
+		res.redirect("/")
+		return
+	}
+	User.findOne({
+		attributes: ["screen_name", "email", "schedule", "hour_preference", "days_preference", "createdAt", "updatedAt"],
+		where: {
+			twitter_id: req.user.id
+		}
+	}).then((user) => {
+		if(!user){
+			res.sendStatus(404)
+			return
+		}
+		Link.findAll({
+			attributes: ["link", "title", "state", "prioritize", "createdAt", "updatedAt"],
+			where: {
+				user_id: req.user.id
+			}
+		}).then((links) => {
+			res.json({user: user, links: links})
+		})
+	})
+})
+
 app.get("/account/premium", (req, res) => {
 	if(!req.isAuthenticated()){
 		res.redirect("/")
@@ -524,6 +550,71 @@ app.delete("/api/link/:id", (req, res) => {
 
 	}else{
 		console.log("Anonymous :(")
+		res.sendStatus(403)
+	}
+})
+
+app.delete('/api/account', (req, res) => {
+	if(req.isAuthenticated()){
+		Link.destroy({
+			where: {
+				user_id: req.user.id
+			}
+		}).then((f) => {
+			User.destroy({
+				where: {
+					twitter_id: req.user.id
+				}
+			}).then(() => {
+				res.send(JSON.stringify({ success: true, message: "Account deleted", refresh: true }))
+			})
+		})
+	}else{
+		res.sendStatus(403)
+	}
+})
+
+app.get('/api/metrics', (req, res) => {
+	if(req.isAuthenticated() && req.user.id == process.env.ADMIN_UID){ // avoid dos breach on database
+		let final_users = {
+			all: [],
+			with_pocket: [],
+			without_timezone: []
+		}
+		let final_links = {
+			all: [],
+			sent: []
+		}
+		User.findAll()
+			.then((users) => {
+				final_users.all = users
+				for(let user of users){
+					if(!!user.pocket_token){
+						final_users.with_pocket.push(user)
+					}
+					if(user.schedule == null){
+						final_users.without_timezone.push(user)
+					}
+				}
+				Link.findAll()
+					.then((links) => {
+						final_links.all = links
+						for(let link of links){
+							if(link.state != 0){
+								final_links.sent.push(link)
+							}
+						}
+
+						res.send({
+							users_global: final_users.all.length,
+							users_with_pocket: final_users.with_pocket.length,
+							users_without_timezone: final_users.without_timezone.length,
+							links_global: final_links.all.length,
+							links_sent: final_links.sent.length
+						})
+					})
+			})
+	}else{
 		res.sendStatus(403)
 	}
 })

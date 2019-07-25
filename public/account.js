@@ -173,3 +173,25 @@ let _delete = (id) => {
 		  })
 	}
 }
+
+document.querySelector("#delete_account").addEventListener("click", (e) => {
+	e.preventDefault()
+	let r1 = confirm("Are you sure you want to delete your account? This is irreversible")
+	if(r1){
+		let r2 = confirm("Last confirmation before operation: have you decided to delete all your data from ClearList?")
+		if(r2){
+			fetch("/api/account", {
+				method: "DELETE",
+				credentials: 'same-origin',
+				headers: {
+					"Content-Type": "application/json"
+				}
+			}).then((res) => { return res.json() })
+			  .then((data) => {
+				if (data.success) {
+					_addAlertMessage("info", "Your account has been deleted, please refresh the page!")
+				}
+			})
+		}
+	}
+})

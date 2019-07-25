@@ -251,6 +251,12 @@ hr {
 	padding: 16px;
 	display: none;
 }
+.delete--action{
+	text-decoration-color: #F00;
+	color: lightgray;
+	display: block;
+	text-align: center
+}
 
 
 .center {

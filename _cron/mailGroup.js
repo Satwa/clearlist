@@ -75,7 +75,6 @@ Link.sync()
 
 /*
 TODO:
- - Mail title
  - Matomo analytics (is this mail being read and solving the problem?)
 */
 
@@ -117,7 +116,7 @@ User.findAll({where: {
 						if(err){
 							console.warn(err)
 						}else{
-							sendMail(user.email, "ClearList - Reading Time", str, "Hey " + user.screen_name + ", here's a cool thing to read today! \n" + article.content) 
+							sendMail(user.email, "Reading Time - " + article.title, str, "Hey " + user.screen_name + ", here's a cool thing to read today! \n" + article.content) 
 						}
 						
 						link.update({
@@ -135,7 +134,7 @@ User.findAll({where: {
 
 let sendMail = (email, subject, html, text) => {
 	let mailOptions = {
-		from: "ClearList <read@clearlist.com>",
+		from: "ClearList <read@clearlist.app>",
 		to: email,
 		subject: subject,
 		html: html,
@@ -144,8 +143,8 @@ let sendMail = (email, subject, html, text) => {
 
 	transporter.sendMail(mailOptions, (err, info) => {
 		if(err){
-			console.warn(err)
+			console.warn("Error sending mail: " + err)
 		}
-		console.log(info)
+		console.log("Mail sent.")
 	})
 } // text comes from html
