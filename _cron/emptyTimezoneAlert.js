@@ -69,7 +69,7 @@ User.hasMany(Link, { foreignKey: 'user_id' }) // User has many links
 User.sync()
 Link.sync()
 
-if (true) { // every wednesday // (new Date()).getDay() == 3
+if ((new Date()).getDay() == 3) { // every wednesday
     User.findAll({
         where: {
             schedule: null
