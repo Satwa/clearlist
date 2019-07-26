@@ -21,6 +21,11 @@ schedule.scheduleJob("0 1 * * *", () => {
 	require("./_cron/stillPremium") // check subscriptions every day
 })
 
+schedule.scheduleJob("10 9 * * 3", () => {
+	require("./_cron/emptyListAlert") // send mail to users with empty list on wednesday
+	require("./_cron/emptyTimezoneAlert") // send mail to users with no timezone on wednesday
+})
+
 schedule.scheduleJob("01 * * * *", () => {
 	require("./_cron/fetchPocket") // fetch from Pocket every hour
 
