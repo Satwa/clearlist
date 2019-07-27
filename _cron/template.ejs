@@ -32,6 +32,14 @@
 			color:gray;
 			text-align: center;
 		}
+		.twitter-share-button {
+			font-size: 12px;
+			background: #1da1f2;
+			text-decoration: none;
+			color: white;
+			border-radius: 2px;
+			padding: 2px 6px;
+		}
 	</style>
 </head>
 <body>
@@ -57,7 +65,8 @@
 			                    
 			                    <p style="word-wrap: normal;font-weight: 300;"><%- content.replace('\n\n', '<br><br>') %></p>
 
-			                    <a href="<%= link %>" class="cta">Read it here</a>
+								<a href="<%= link %>" class="cta">Read it here</a>
+								<a href="https://twitter.com/intent/tweet?text=I+read+%22<%= title %>%22+<%= link %>+using+https%3A//clearlist.app%2C+the+app+that+helps+you+getting+rid+of+your+reading+list%21+via+%40joshtab_" class="twitter-share-button">Tweet</a>
 		                    </p>
 		                </td>
 		            </tr>
