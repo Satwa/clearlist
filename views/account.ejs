@@ -25,17 +25,13 @@
 				
 				<br>
 
-				<!-- <span class="pocket--status <%- user.isPremium ? 'active' : 'inactive' %>"></span>
-				<% if(!user.isPremium){ %>
-				You are not a premium member yet, <a href="/account/premium">check out what features it unlocks</a>!
-				<% }else{ %>
-				Thanks for being premium, mate! 💖 You can <a href="/account/premium">manage your subscription here</a>.
-				<% } %> -->
+				<span class="pocket--status <%- user.isPremium ? 'active' : 'inactive' %>"></span>
+				Thanks for using ClearList! 💖 You can <a href="/account/cancel">cancel your subscription here</a>.
 			</div>
 			<div class="col-12">
 				<form method="post" action="/account/update" style="text-align: center">
 					
-					<div class="day_checkbox_container premium_features">
+					<div class="day_checkbox_container">
 						<input type="checkbox" name="1" id="1" class="day_checkbox"> <label for="1" class="day_checkbox_label">Monday</label>
 						<input type="checkbox" name="2" id="2" class="day_checkbox"> <label for="2" class="day_checkbox_label">Tuesday</label>
 						<input type="checkbox" name="3" id="3" class="day_checkbox"> <label for="3" class="day_checkbox_label">Wednesday</label>
@@ -170,11 +166,11 @@
 							<td class="arLinks">
 								<% if(!link.state){ %>
 									<% if(!link.prioritize){ %> 
-										<i class="fas fa-fast-forward premium_features" onclick="_prioritize(<%= link.id %>)" id="p<%= link.id %>"></i> 
+										<i class="fas fa-fast-forward" onclick="_prioritize(<%= link.id %>)" id="p<%= link.id %>"></i> 
 									<% } %>
 									<i class="fas fa-trash-alt" onclick="_delete(<%= link.id %>)" id="l<%= link.id %>"></i>
 								<% }else{ %>
-									<i class="fas fa-redo-alt premium_features" onclick="_resend(<%= link.id %>)" id="rsl<%= link.id %>" title="Resend article"></i>
+									<i class="fas fa-redo-alt" onclick="_resend(<%= link.id %>)" id="rsl<%= link.id %>" title="Resend article"></i>
 								<% } %>
 							</td>
 						  </tr>

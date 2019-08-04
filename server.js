@@ -313,40 +313,40 @@ app.get('/account/dump', (req, res) => {
 	})
 })
 
-app.get("/account/premium", (req, res) => {
-	if(!req.isAuthenticated()){
-		res.redirect("/")
-		return
-	}
-	User.findOne({ where: { twitter_id: req.user.id } })
-		.then((user) => {
-			if (!user) {
-				res.redirect("/")
-				return
-			}
+// app.get("/account/premium", (req, res) => {
+// 	if(!req.isAuthenticated()){
+// 		res.redirect("/")
+// 		return
+// 	}
+// 	User.findOne({ where: { twitter_id: req.user.id } })
+// 		.then((user) => {
+// 			if (!user) {
+// 				res.redirect("/")
+// 				return
+// 			}
 
-			stripe.checkout.sessions.create({
-				success_url: process.env.CALLBACK_URL + 'account?toast=thanks&message=Thanks-for-subscribing-and-supporting-me,-I-hope-this-product-is-helpful-and-feel-free-to-tell-me-how-to-improve-it!',
-				cancel_url: process.env.CALLBACK_URL + 'account?toast=info&message=Something-wrong-happened-while-processing-the-checkout,-please-retry!',
-				payment_method_types: ['card'],
-				subscription_data: {
-					items: [{
-						plan: process.env.STRIPE_PLAN_ID
-					}]
-				},
-				client_reference_id: user.twitter_id,
-				customer_email: user.email
-			}, function (err, session) {
-				if(err){
-					res.render("account-premium", { session_id: null, stripe_key: process.env.STRIPE_PUBLIC_KEY })
-					return
-				}
-				res.render("account-premium", { session_id: session.id, stripe_key: process.env.STRIPE_PUBLIC_KEY })
-			})
-		})
-})
+// 			stripe.checkout.sessions.create({
+// 				success_url: process.env.CALLBACK_URL + 'account?toast=thanks&message=Thanks-for-subscribing-and-supporting-me,-I-hope-this-product-is-helpful-and-feel-free-to-tell-me-how-to-improve-it!',
+// 				cancel_url: process.env.CALLBACK_URL + 'account?toast=info&message=Something-wrong-happened-while-processing-the-checkout,-please-retry!',
+// 				payment_method_types: ['card'],
+// 				subscription_data: {
+// 					items: [{
+// 						plan: process.env.STRIPE_PLAN_ID
+// 					}]
+// 				},
+// 				client_reference_id: user.twitter_id,
+// 				customer_email: user.email
+// 			}, function (err, session) {
+// 				if(err){
+// 					res.render("account-premium", { session_id: null, stripe_key: process.env.STRIPE_PUBLIC_KEY })
+// 					return
+// 				}
+// 				res.render("account-premium", { session_id: session.id, stripe_key: process.env.STRIPE_PUBLIC_KEY })
+// 			})
+// 		})
+// })
 
-app.get("/account/premium/cancel", (req, res) => {
+app.get("/account/cancel", (req, res) => {
 	if (!req.isAuthenticated()) {
 		res.redirect("/")
 		return
