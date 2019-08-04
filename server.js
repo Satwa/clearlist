@@ -241,8 +241,8 @@ app.get("/login/pocket/callback", (req, res) => {
 							access_token: data.access_token,
 							consumer_key: process.env.POCKET_CONSUMER_KEY
 						}
-					}).then((res) => {
-						let data = res.getBody()
+					}).then((response) => {
+						let data = response.getBody()
 						for (let item of Object.values(data.list)) {
 							Link.findOne({ where: { user_id: user.twitter_id, link: item.resolved_url } })
 								.then((link) => {
@@ -255,15 +255,18 @@ app.get("/login/pocket/callback", (req, res) => {
 										console.log("[DEBUG] - Link existing for " + user.screen_name)
 									}
 								})
+
+							if(item.resolved_url == data.list[Object.keys(data.list)[Object.keys(data.list).length - 1]].resolved_url){ // if last item -> redirect
+								res.redirect("/account?toast=info&message=Successfully-linked-your-Pocket-account,-currently-syncing-your-list")
+							}
 						}
 					}).catch((err) => console.log(err))
 
 
-					// Save token & redirect
+					// Save token
 					user.update({
 						pocket_token: data.access_token
 					})
-					res.redirect("/account?toast=info&message=Successfully-linked-your-Pocket-account,-currently-syncing-your-list")
 				} else {
 					res.redirect("/account?toast=warning&message=Error-occurred-while-linking-your-Pocket-account,-please-try-again")
 				}

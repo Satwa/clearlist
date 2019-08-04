@@ -73,12 +73,6 @@ User.hasMany(Link, {foreignKey: 'user_id'}) // User has many links
 User.sync()
 Link.sync()
 
-/*
-TODO:
- - Matomo analytics (is this mail being read and solving the problem?)
-*/
-
-
 User.findAll({where: {
 		schedule: {
 			[Sequelize.Op.ne]: null // NOT NULL // TODO: AND SUBSCRIBED

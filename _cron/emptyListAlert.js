@@ -73,7 +73,7 @@ if ((new Date()).getDay() == 3) { // every Wednesday
     User.findAll({
         where: {
             schedule: {
-                [Sequelize.Op.ne]: null // NOT NULL // TODO: AND SUBSCRIBED
+                [Sequelize.Op.ne]: null
             }
         }
     }).then((users) => {
@@ -93,7 +93,7 @@ if ((new Date()).getDay() == 3) { // every Wednesday
                                         <br>
                                         If you still have no article added to your list, this is dead-simple and you can do it now by going to your <a href="https://clearlist.app/account">account</a> and adding manually a link or by syncing your Pocket account.
                                         <br><br>
-                                        It's true, this email is automated but I've written it first. That's why I'd love to hear more from you about what you like, you dislike and what could be improved. I'm opened for any message (related or not to ClearList). You can do it by answering to this email, your answer will arrive right in my personal inbox!`
+                                        <i>I am really happy to see ClearList helped you get rid of your reading list! Feel free to reach me by hitting the reply button and tell me what can be improved and start a conversation :)</i>`
 
                         ejs.renderFile("./_cron/user-template.ejs", {
                             screen_name: user.screen_name,

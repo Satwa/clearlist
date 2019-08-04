@@ -189,7 +189,7 @@ document.querySelector("#delete_account").addEventListener("click", (e) => {
 			}).then((res) => { return res.json() })
 			  .then((data) => {
 				if (data.success) {
-					_addAlertMessage("info", "Your account has been deleted, please refresh the page!")
+					window.location.replace("/?toast=info&message=Your-account-has-been-deleted!")
 				}
 			})
 		}

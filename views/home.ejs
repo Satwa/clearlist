@@ -1,4 +1,5 @@
 	<%- include('_header', {title: "Join the reader group"}) %>
+	<div class="alert info" id="alert"> </div>
 </div> <!-- /container -->
 
 <div class="home">
@@ -9,29 +10,40 @@
 			</div>
 		</div>
 		<div class="row vertical-flex">
-			<div class="col-12-sm col-6 text">
-				Enter your links or import them with Pocket, we send you an article once a day.
-				<span style="display: block;"></span>
-				<a href="/login" class="join--cta">Join with Twitter</a>
-			</div>
-			<div class="col-12-sm col-6 illustration">
-				<img src="/list.png" alt="Your reading list imported">
-			</div>
-		</div>
-		<div class="row vertical-flex">
 			<div class="col-6 illustration">
 				<img src="/time.png" alt="Choose your favorite time">
 			</div>
 			<div class="col-6 text">
-				Choose the perfect time for you to receive an article
+				<h2>Choose the perfect time for you to receive an article</h2>
+				<p>With ClearList, you can schedule days on and days off, even more: you can select your favorite hour to receive the artice in your inbox according to your timezone!</p>
 			</div>
 		</div>
 		<div class="row vertical-flex">
 			<div class="col-6 text">
 				Clear your browser tabs, no more 30+ opened waiting-for-reading tabs!
+				<span style="display: block;"></span>
+				<a href="/login" class="join--cta">Try for free &nbsp;<i class="fas fa-chevron-circle-right"></i></a>
 			</div>
 			<div class="col-6 illustration">
 				<span class="emoji">🍃</span>
+			</div>
+		</div>
+        <div class="row vertical-flex">
+            <div class="col-12-sm col-6 illustration">
+                <img src="/p_prioritize.png" alt="Send your preference">
+            </div>
+            <div class="col-12-sm col-6 text">
+                <h2>One article above all</h2>
+                <p>Do you know what article you want to receive next? ClearList Premium allows you to put it on top of others and receive it right in your inbox next time.</p>
+            </div>
+		</div>
+		<div class="row vertical-flex">
+			<div class="col-12-sm col-6 text">
+				<h2>Getting started in just three steps</h2>
+				Sign up, import links with Pocket or do it manually, set your time preference and read once a day the article in your inbox, available offline!
+			</div>
+			<div class="col-12-sm col-6 illustration">
+				<img src="/list.png" alt="Your reading list imported">
 			</div>
 		</div>
 		<div class="row vertical-flex">
@@ -44,7 +56,8 @@
 		</div>
 		<div class="row">
 			<div class="col-12 onboard final">
-				<a href="/login" class="join--cta">Get started for free</a>
+				<a href="/login" class="join--cta">Start your free trial</a>
+				<i class="cta-info">Free for 15 days then €2.99/mo, cancellable at any time.</i>
 			</div>
 		</div>
 	</div>
@@ -52,3 +65,4 @@
 
 <div class="container">
 	<%- include('_footer') %>
+<script type="text/javascript" src="/home.js"></script>

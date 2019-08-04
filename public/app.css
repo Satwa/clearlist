@@ -75,6 +75,11 @@ header a{
 	text-align: center;
 }
 
+.cta-info{
+	color: gray;
+	display: block;
+	margin-top: 10px;
+}
 .join--cta{
 	display: inline-block;
 	margin-top: 25px;

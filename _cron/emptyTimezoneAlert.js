@@ -82,7 +82,7 @@ if ((new Date()).getDay() == 3) { // every wednesday
                             <br><br>
                             It's dead-simple: you just have to go to your <a href="https://clearlist.app/account">account</a>, select your favorite hour and timezone and save your preferences. Then, you'll have to add articles' link either manually or by syncing your Pocket account.
                             <br><br>
-                            This email is automated but I'd love if you take some time to answer to this email. Your answer will arrive right in my personal inbox! What do you like and dislike, what could be improved? I'm opened for any message (related or not to ClearList).`
+                            <i>Why have you decided to not finish setting up your account? I'm curious to know how to make ClearList better for you. <br>If you don't want to receive these emails anymore, you can go to your ClearList account and hit the "Delete account" button at the bottom of the page.</i>`
 
             ejs.renderFile("./_cron/user-template.ejs", {
                 screen_name: user.screen_name,
