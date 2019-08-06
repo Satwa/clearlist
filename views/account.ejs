@@ -26,7 +26,11 @@
 				<br>
 
 				<span class="pocket--status <%- user.isPremium ? 'active' : 'inactive' %>"></span>
-				Thanks for using ClearList! 💖 You can <a href="/account/cancel">cancel your subscription here</a>.
+				<% if(user.isPremium){ %>
+					Thanks for using ClearList! 💖 You can <a href="/account/cancel">cancel your subscription here</a>.
+				<% }else{ %>
+					There is something wrong with your subscription, contact me or check your inbox.
+				<% } %>
 			</div>
 			<div class="col-12">
 				<form method="post" action="/account/update" style="text-align: center">

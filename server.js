@@ -24,6 +24,7 @@ schedule.scheduleJob("0 1 * * *", () => {
 schedule.scheduleJob("10 9 * * 3", () => {
 	require("./_cron/emptyListAlert") // send mail to users with empty list on wednesday
 	require("./_cron/emptyTimezoneAlert") // send mail to users with no timezone on wednesday
+	require("./_cron/premiumRequiredAlert") // send mail to users with no subscription on wednesday
 })
 
 schedule.scheduleJob("01 * * * *", () => {
@@ -192,7 +193,70 @@ passport.deserializeUser(function(id, done) {
 // Login-related
 app.get("/logout", (req, res) => { req.logout(); res.redirect('/') })
 app.get("/login", passport.authenticate('twitter'))
-app.get("/login/callback", passport.authenticate('twitter', { successRedirect: '/account', failureRedirect: '/' }))
+app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '/' }), (req, res) => {
+	// Handle login subscription part
+	if(req.user.isPremium){
+		res.redirect("/account")
+	}else{
+		User.findOne({ where: { twitter_id: req.user.id } })
+			.then((user) => {
+				// User is not premium, either first login or wasn't at previous login
+				stripe.customers.list({ limit: 100 }, (err, data) => { // TODO: Handle > 100 customers
+					let customers = data.data
+					let userCustomer = customers.filter((e) => e.email == user.email)[0]
+
+					if(userCustomer && !userCustomer.subscriptions.data){ // Previous customer found but has no subscription
+						console.log("SUB: Customer found without subscription")
+						stripe.subscriptions.create({
+							customer: userCustomer.id,
+							items: [{ plan: process.env.STRIPE_PLAN_ID }],
+							trial_period_days: 15
+						}, (err, subscription) => {
+							user.update({
+								stripe_customer_id: userCustomer.id,
+								stripe_subscription_id: subscription.id
+							})
+						})
+					}else if(userCustomer && userCustomer.subscriptions.data.length > 0){ // Previous customer found with subscription
+						console.log("SUB: Customer found with subscription")
+						// Update subscription & link to database
+						stripe.subscriptions.update(userCustomer.subscriptions.data[0].id, {
+							cancel_at_period_end: false,
+							items: [{
+								id: userCustomer.subscriptions.data[0].items.data[0].id,
+								plan: process.env.STRIPE_PLAN_ID,
+							}]
+						})
+
+						user.update({
+							stripe_customer_id: userCustomer.id,
+							stripe_subscription_id: userCustomer.subscriptions.data[0].id
+						})
+					}else{ // No customer
+						console.log("SUB: No customer found, creating one w/ subscription")
+						// Create customer + subscription & link to database
+						stripe.customers.create({
+							email: user.email
+						}, (err, customer) => {
+							stripe.subscriptions.create({
+								customer: customer.id,
+								items: [{ plan: process.env.STRIPE_PLAN_ID }],
+								trial_period_days: 15
+							}, (err, subscription) => {
+								if(!err){
+									user.update({
+										stripe_customer_id: customer.id,
+										stripe_subscription_id: subscription.id
+									})
+								}
+							})
+						})
+					}
+				})
+				res.redirect("/account")
+			})
+	}
+})
 
 app.get("/login/pocket", (req, res) => {
 	requestify.request("https://getpocket.com/v3/oauth/request", {
@@ -312,39 +376,6 @@ app.get('/account/dump', (req, res) => {
 		})
 	})
 })
-
-// app.get("/account/premium", (req, res) => {
-// 	if(!req.isAuthenticated()){
-// 		res.redirect("/")
-// 		return
-// 	}
-// 	User.findOne({ where: { twitter_id: req.user.id } })
-// 		.then((user) => {
-// 			if (!user) {
-// 				res.redirect("/")
-// 				return
-// 			}
-
-// 			stripe.checkout.sessions.create({
-// 				success_url: process.env.CALLBACK_URL + 'account?toast=thanks&message=Thanks-for-subscribing-and-supporting-me,-I-hope-this-product-is-helpful-and-feel-free-to-tell-me-how-to-improve-it!',
-// 				cancel_url: process.env.CALLBACK_URL + 'account?toast=info&message=Something-wrong-happened-while-processing-the-checkout,-please-retry!',
-// 				payment_method_types: ['card'],
-// 				subscription_data: {
-// 					items: [{
-// 						plan: process.env.STRIPE_PLAN_ID
-// 					}]
-// 				},
-// 				client_reference_id: user.twitter_id,
-// 				customer_email: user.email
-// 			}, function (err, session) {
-// 				if(err){
-// 					res.render("account-premium", { session_id: null, stripe_key: process.env.STRIPE_PUBLIC_KEY })
-// 					return
-// 				}
-// 				res.render("account-premium", { session_id: session.id, stripe_key: process.env.STRIPE_PUBLIC_KEY })
-// 			})
-// 		})
-// })
 
 app.get("/account/cancel", (req, res) => {
 	if (!req.isAuthenticated()) {
@@ -569,13 +600,18 @@ app.delete('/api/account', (req, res) => {
 				user_id: req.user.id
 			}
 		}).then((f) => {
-			User.destroy({
-				where: {
-					twitter_id: req.user.id
-				}
-			}).then(() => {
-				res.send(JSON.stringify({ success: true, message: "Account deleted", refresh: true }))
-			})
+			User.findOne( { where: { twitter_id: req.user.id } })
+				.then((user) => {
+					stripe.subscriptions.update(user.stripe_subscription_id, { cancel_at_period_end: true })
+
+					User.destroy({
+						where: {
+							twitter_id: req.user.id
+						}
+					}).then(() => {
+						res.send(JSON.stringify({ success: true, message: "Account deleted", refresh: true }))
+					})
+				})
 		})
 	}else{
 		res.sendStatus(403)
@@ -655,7 +691,7 @@ app.post('/api/stripe/webhook', (request, response) => {
 					stripe_subscription_id: session.subscription
 				})
 			})
-	}
+	} // TODO: Handle new events
 
 	// Return a response to acknowledge receipt of the event
 	response.json({ received: true });

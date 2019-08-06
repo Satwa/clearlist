@@ -256,6 +256,9 @@ hr {
 	padding: 16px;
 	display: none;
 }
+.alert div{
+	cursor: pointer;
+}
 .delete--action{
 	text-decoration-color: #F00;
 	color: lightgray;
