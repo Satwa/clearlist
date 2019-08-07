@@ -74,6 +74,9 @@ if ((new Date()).getDay() == 3) { // every Wednesday
         where: {
             schedule: {
                 [Sequelize.Op.ne]: null
+            },
+            stripe_subscription_id: {
+                [Sequelize.Op.ne]: null // AND SUBSCRIBED
             }
         }
     }).then((users) => {

@@ -623,7 +623,8 @@ app.get('/api/metrics', (req, res) => {
 		let final_users = {
 			all: [],
 			with_pocket: [],
-			without_timezone: []
+			without_timezone: [],
+			without_subscription: []
 		}
 		let final_links = {
 			all: [],
@@ -639,6 +640,9 @@ app.get('/api/metrics', (req, res) => {
 					if(user.schedule == null){
 						final_users.without_timezone.push(user)
 					}
+					if(user.stripe_customer_id == null){
+						final_users.without_subscription.push(user)
+					}
 				}
 				Link.findAll()
 					.then((links) => {
@@ -653,6 +657,7 @@ app.get('/api/metrics', (req, res) => {
 							users_global: final_users.all.length,
 							users_with_pocket: final_users.with_pocket.length,
 							users_without_timezone: final_users.without_timezone.length,
+							users_without_subscription: final_users.without_subscription.length,
 							links_global: final_links.all.length,
 							links_sent: final_links.sent.length
 						})

@@ -54,6 +54,9 @@ User.findAll({
     where: {
         schedule: {
             [Sequelize.Op.ne]: null
+        },
+        stripe_subscription_id: {
+            [Sequelize.Op.ne]: null // AND SUBSCRIBED
         }
     }
 }).then((users) => {

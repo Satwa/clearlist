@@ -72,7 +72,10 @@ Link.sync()
 if ((new Date()).getDay() == 3) { // every wednesday
     User.findAll({
         where: {
-            schedule: null
+            schedule: null,
+            stripe_subscription_id: {
+                [Sequelize.Op.ne]: null // AND SUBSCRIBED
+            }
         }
     }).then((users) => {
         users.forEach((user) => {
