@@ -210,6 +210,7 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 						stripe.subscriptions.create({
 							customer: userCustomer.id,
 							items: [{ plan: process.env.STRIPE_PLAN_ID }],
+							collection_method: "send_invoice",
 							trial_period_days: 15
 						}, (err, subscription) => {
 							user.update({
@@ -241,6 +242,7 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 							stripe.subscriptions.create({
 								customer: customer.id,
 								items: [{ plan: process.env.STRIPE_PLAN_ID }],
+								collection_method: "send_invoice",
 								trial_period_days: 15
 							}, (err, subscription) => {
 								if(!err){
