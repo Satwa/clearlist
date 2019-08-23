@@ -684,7 +684,7 @@ app.post('/api/stripe/webhook', (request, response) => {
 
 	// Handle the checkout.session.completed event
 	if (event.type === 'checkout.session.completed') {
-		const session = event.data.object;
+		const session = event.data.object
 		
 		User.findOne({ where: { twitter_id: session.client_reference_id } })
 			.then((user) => {
@@ -698,10 +698,18 @@ app.post('/api/stripe/webhook', (request, response) => {
 					stripe_subscription_id: session.subscription
 				})
 			})
+	}else if(event.type === 'invoice.created'){
+		if(event.data.object.billing_reason !== "subscription_create"){
+			stripe.invoices.update(event.data.object.id, {
+					auto_advance: true,
+				}, function (err, invoice) {
+					console.log(err)
+				})
+		}
 	} // TODO: Handle new events
 
 	// Return a response to acknowledge receipt of the event
-	response.json({ received: true });
+	response.json({ received: true })
 });
 
 // nodemon server.js && maildev [ http://localhost:3000/account | http://localhost:1080/ ]
