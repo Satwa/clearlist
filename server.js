@@ -200,46 +200,53 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 	}else{
 		User.findOne({ where: { twitter_id: req.user.id } })
 			.then((user) => {
-				if(!user){
-					stripe.customers.create({
-						email: user.email
-					}, (err, customer) => {
-						stripe.subscriptions.create({
-							customer: customer.id,
-							items: [{ plan: process.env.STRIPE_PLAN_ID }],
-							collection_method: "send_invoice",
-							trial_period_days: 15
-						}, (err, subscription) => {
-							if(!err){
-								user.update({
-									stripe_customer_id: customer.id,
-									stripe_subscription_id: subscription.id
-								})
-							}
-						})
-					})
-					res.redirect("/account")
-					return
-				}
 				// User is not premium, either first login or wasn't at previous login
 				stripe.customers.list({ limit: 100 }, (err, data) => { // TODO: Handle > 100 customers
 					let customers = data.data
 					let userCustomer = customers.filter((e) => e.email == user.email)[0]
 
-					if(userCustomer && !userCustomer.subscriptions.data){ // Previous customer found but has no subscription
+					if (userCustomer === undefined) { // No customer
+						console.log("SUB: No customer found, creating one w/ subscription")
+						// Create customer + subscription & link to database
+						stripe.customers.create({
+							email: user.email
+						}, (err, customer) => {
+							stripe.subscriptions.create({
+								customer: customer.id,
+								items: [{ plan: process.env.STRIPE_PLAN_ID }],
+								collection_method: "send_invoice",
+								trial_period_days: 15,
+								days_until_due: 7
+							}, (err, subscription) => {
+								if (!err) {
+									user.update({
+										stripe_customer_id: customer.id,
+										stripe_subscription_id: subscription.id
+									})
+								}else{
+									console.log(err)
+								}
+							})
+						})
+					}else if(userCustomer !== undefined && userCustomer.subscriptions.data.length == 0){ // Previous customer found but has no subscription
 						console.log("SUB: Customer found without subscription")
 						stripe.subscriptions.create({
 							customer: userCustomer.id,
 							items: [{ plan: process.env.STRIPE_PLAN_ID }],
 							collection_method: "send_invoice",
-							trial_period_days: 15
+							trial_period_days: 15,
+							days_until_due: 7
 						}, (err, subscription) => {
-							user.update({
-								stripe_customer_id: userCustomer.id,
-								stripe_subscription_id: subscription.id
-							})
+							if(!err){
+								user.update({
+									stripe_customer_id: userCustomer.id,
+									stripe_subscription_id: subscription.id
+								})
+							}else{
+								console.log(err)
+							}
 						})
-					}else if(userCustomer && userCustomer.subscriptions.data.length > 0){ // Previous customer found with subscription
+					}else if(userCustomer !== undefined && userCustomer.subscriptions.data.length > 0){ // Previous customer found with subscription
 						console.log("SUB: Customer found with subscription")
 						// Update subscription & link to database
 						stripe.subscriptions.update(userCustomer.subscriptions.data[0].id, {
@@ -254,26 +261,8 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 							stripe_customer_id: userCustomer.id,
 							stripe_subscription_id: userCustomer.subscriptions.data[0].id
 						})
-					}else{ // No customer
-						console.log("SUB: No customer found, creating one w/ subscription")
-						// Create customer + subscription & link to database
-						stripe.customers.create({
-							email: user.email
-						}, (err, customer) => {
-							stripe.subscriptions.create({
-								customer: customer.id,
-								items: [{ plan: process.env.STRIPE_PLAN_ID }],
-								collection_method: "send_invoice",
-								trial_period_days: 15
-							}, (err, subscription) => {
-								if(!err){
-									user.update({
-										stripe_customer_id: customer.id,
-										stripe_subscription_id: subscription.id
-									})
-								}
-							})
-						})
+					}else{
+						console.log("SUB: Unhandled case")
 					}
 				})
 				res.redirect("/account")
@@ -625,7 +614,9 @@ app.delete('/api/account', (req, res) => {
 		}).then((f) => {
 			User.findOne( { where: { twitter_id: req.user.id } })
 				.then((user) => {
-					stripe.subscriptions.update(user.stripe_subscription_id, { cancel_at_period_end: true })
+					if(user.stripe_subscription_id){
+						stripe.subscriptions.update(user.stripe_subscription_id, { cancel_at_period_end: true })
+					}
 
 					User.destroy({
 						where: {
