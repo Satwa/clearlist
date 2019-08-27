@@ -80,7 +80,7 @@ if ((new Date()).getDay() == 3) { // every Wednesday
 
             let content = `ClearList has switched from a freemium model to a subscription model. Running this project costs me money that I don't have and I'm pretty sure that if you love it, you will subscribe for the price of a coffee every month!
                             <br><br>
-                            Plus, you will start with a 15-day free trial and the subscription is cancellable at any time. To start activating it, it's dead-simple: you just have to go to your <a href="https://clearlist.app/account">account</a>, no credit card required.
+                            Your trial ended and the invoice hasn't been paid. Do you think this is an error? Hit reply without waiting and I'll fix this issue with you!
                             <br><br>
                             <i>I hope this won't be a no-go for you and if you think this is unfair, hit the reply button and let's talk about how to make it better for you!</i>`
 
@@ -92,7 +92,7 @@ if ((new Date()).getDay() == 3) { // every Wednesday
                 if (err) {
                     console.warn(err)
                 } else {
-                    sendMail(user.email, "You need to activate your free trial.", str, "Hey " + user.screen_name + ", ClearList has switched from freemium to subscription model, let's talk! \n\n" + content)
+                    sendMail(user.email, "Your account has been disabled.", str, "Hey " + user.screen_name + ", ClearList has switched from freemium to subscription model, let's talk! \n\n" + content)
                 }
             })
         })
