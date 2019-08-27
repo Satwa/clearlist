@@ -200,6 +200,27 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 	}else{
 		User.findOne({ where: { twitter_id: req.user.id } })
 			.then((user) => {
+				if(!user){
+					stripe.customers.create({
+						email: user.email
+					}, (err, customer) => {
+						stripe.subscriptions.create({
+							customer: customer.id,
+							items: [{ plan: process.env.STRIPE_PLAN_ID }],
+							collection_method: "send_invoice",
+							trial_period_days: 15
+						}, (err, subscription) => {
+							if(!err){
+								user.update({
+									stripe_customer_id: customer.id,
+									stripe_subscription_id: subscription.id
+								})
+							}
+						})
+					})
+					res.redirect("/account")
+					return
+				}
 				// User is not premium, either first login or wasn't at previous login
 				stripe.customers.list({ limit: 100 }, (err, data) => { // TODO: Handle > 100 customers
 					let customers = data.data
