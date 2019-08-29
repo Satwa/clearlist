@@ -42,18 +42,14 @@ User.findAll({
     }
 }).then((users) => {
     users.forEach((user) => {
-        stripe.subscriptions.retrieve(
-            user.stripe_subscription_id,
-            function (err, subscription) {
-                err ? console.log(err) : null
-
-                if(subscription.status != "trialing" || subscription.status != "active" || (subscription.ended_at && Math.floor(Date.now()/3) > subscription.ended_at)){
-                    user.update({
-                        stripe_subscription_id: null
-                    })
-                    console.log(user.screen_name + " has stopped his/her subscription")
-                }
+        stripe.subscriptions.retrieve(user.stripe_subscription_id, function (err, subscription) {
+            err ? console.log(err) : null
+            if((subscription.ended_at && Math.floor(Date.now()/3) > subscription.ended_at) || subscription.status == "past_due"){
+                user.update({
+                    stripe_subscription_id: null
+                })
+                console.log(user.screen_name + " has stopped his/her subscription")
             }
-        )
+        })
     })
-})
+}).catch((err) => console.log(err))
