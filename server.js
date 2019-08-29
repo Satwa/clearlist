@@ -11,7 +11,7 @@ const passport 		= require('passport')
 const Sequelize     = require('sequelize')
 const TwitterStrategy = require('passport-twitter').Strategy
 const sequelize 	= new Sequelize(process.env.DATABASE_URL, { logging: false })
-const schedule 		= require('node-schedule')
+// const schedule 		= require('node-schedule')
 
 const stripe 		= require("stripe")(process.env.STRIPE_KEY)
 const CALLBACKURL   = process.env.CALLBACK_URL
@@ -27,14 +27,14 @@ const CALLBACKURL   = process.env.CALLBACK_URL
 // 	require("./_cron/premiumRequiredAlert") // send mail to users with no subscription on wednesday
 // })
 
-schedule.scheduleJob("01 * * * *", () => {
-	require("./_cron/fetchPocket") // fetch from Pocket every hour
+// schedule.scheduleJob("01 * * * *", () => {
+// 	require("./_cron/fetchPocket") // fetch from Pocket every hour
 
-	require("./_cron/mailGroup") // mail group every hour
-})
-schedule.scheduleJob("*/2 * * * *", () => {
-	require("./_cron/fetchTitle") // every 5 minutes
-})
+// 	require("./_cron/mailGroup") // mail group every hour
+// })
+// schedule.scheduleJob("*/2 * * * *", () => {
+// 	require("./_cron/fetchTitle") // every 5 minutes
+// })
 
 app.set('view engine', "ejs")
 app.use(express.static('public'))
