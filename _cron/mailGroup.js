@@ -105,20 +105,26 @@ User.findAll({where: {
 					return
 				}
 				read(link.link, (err, article, meta) => {
+					if(err){
+						console.log("Error fetching article.")
+						console.log(err)
+						return
+					}
 					ejs.renderFile("./_cron/template.ejs", {
 						title: article.title,
 						content: article.content,
 						link: link.link,
 					}, {/* wut */}, (err, str) => {
 						if(err){
+							console.log("Error redering template.")
 							console.warn(err)
 						}else{
 							sendMail(user.email, "Reading Time - " + article.title, str, "Hey " + user.screen_name + ", here's a cool thing to read today! \n" + article.content) 
+							
+							link.update({
+								state: 1
+							})
 						}
-						
-						link.update({
-							state: 1
-						})
 						
 						article.close()
 					})
