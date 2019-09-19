@@ -187,7 +187,8 @@ hr {
 }
 
 [type="checkbox"]:not(:checked) + label.day_checkbox_label {
-	background: #eec10e;
+	background: #CCC;
+	opacity: .6;
 }
 
 [type="checkbox"]:checked + label.day_checkbox_label {

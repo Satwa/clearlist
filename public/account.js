@@ -23,6 +23,10 @@ addButton.addEventListener("click", (e) => {
 		return
 	}
 
+	if(schedule === null){
+		window.alert("We saved your article but you must select your favorite days, hour and timezone (then save) to receive it. You can do this at the end of the page")
+	}
+
 	console.log(url)
 	waitIcon.style.display = "inline"
 	sendIcon.style.display = "none"
@@ -38,7 +42,6 @@ addButton.addEventListener("click", (e) => {
 		return response.json()
 	}).then((data) => {
 		if (data.success) {
-			
 			table.querySelector("tbody").insertAdjacentHTML("beforeend", "<tr> <td><i class=\"fas fa-smile\" title=\"This link has just been added\"></i></td> <td><a href=" + url + " target=\"_blank\" style=\"text-decoration: none;\"><span style=\"color:#777;\">No title yet.</span></a></td> <td class=\"arLinks\"><i class=\"fas fa-trash-alt\" onclick=\"_delete(" + data.linkId + ")\" id=\"l" + data.linkId + "\"></i></td> </tr>")
 			_addAlertMessage("info", "This link has been added to your list, read it soon in your inbox!")
 		} else {
