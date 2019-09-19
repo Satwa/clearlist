@@ -11,30 +11,32 @@ const passport 		= require('passport')
 const Sequelize     = require('sequelize')
 const TwitterStrategy = require('passport-twitter').Strategy
 const sequelize 	= new Sequelize(process.env.DATABASE_URL, { logging: false })
-// const schedule 		= require('node-schedule')
+const schedule 		= require('node-schedule')
 
 const stripe 		= require("stripe")(process.env.STRIPE_KEY)
 const CALLBACKURL   = process.env.CALLBACK_URL
 
 // Scheduler
-// schedule.scheduleJob("0 1 * * *", () => {
-// 	require("./_cron/stillPremium") // check subscriptions every day
-// })
-
-// schedule.scheduleJob("10 9 * * 3", () => {
-// 	require("./_cron/emptyListAlert") // send mail to users with empty list on wednesday
-// 	require("./_cron/emptyTimezoneAlert") // send mail to users with no timezone on wednesday
-// 	require("./_cron/premiumRequiredAlert") // send mail to users with no subscription on wednesday
-// })
-
-// schedule.scheduleJob("01 * * * *", () => {
-// 	require("./_cron/fetchPocket") // fetch from Pocket every hour
-
-// 	require("./_cron/mailGroup") // mail group every hour
-// })
-// schedule.scheduleJob("*/2 * * * *", () => {
-// 	require("./_cron/fetchTitle") // every 5 minutes
-// })
+if(process.env.STATUS){ // Only when dev environment
+	schedule.scheduleJob("0 1 * * *", () => {
+		require("./_cron/stillPremium") // check subscriptions every day
+	})
+	
+	schedule.scheduleJob("10 9 * * 3", () => {
+		require("./_cron/emptyListAlert") // send mail to users with empty list on wednesday
+		require("./_cron/emptyTimezoneAlert") // send mail to users with no timezone on wednesday
+		require("./_cron/premiumRequiredAlert") // send mail to users with no subscription on wednesday
+	})
+	
+	schedule.scheduleJob("01 * * * *", () => {
+		require("./_cron/fetchPocket") // fetch from Pocket every hour
+	
+		require("./_cron/mailGroup") // mail group every hour
+	})
+	schedule.scheduleJob("*/2 * * * *", () => {
+		require("./_cron/fetchTitle") // every 5 minutes
+	})
+}
 
 app.set('view engine', "ejs")
 app.use(express.static('public'))
@@ -203,7 +205,12 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 				// User is not premium, either first login or wasn't at previous login
 				stripe.customers.list({ limit: 100 }, (err, data) => { // TODO: Handle > 100 customers
 					let customers = data.data
-					let userCustomer = customers.filter((e) => e.email == user.email)[0]
+					let userCustomer = undefined
+					try{
+						userCustomer = customers.filter(function(e) { return e.email == user.email })[0]
+					}catch(error){
+						console.warn("Error with userCustomer (new user)", error)
+					}
 
 					if (userCustomer === undefined) { // No customer
 						console.log("SUB: No customer found, creating one w/ subscription")
@@ -214,9 +221,7 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 							stripe.subscriptions.create({
 								customer: customer.id,
 								items: [{ plan: process.env.STRIPE_PLAN_ID }],
-								collection_method: "send_invoice",
-								trial_period_days: 15,
-								days_until_due: 7
+								trial_period_days: 15
 							}, (err, subscription) => {
 								if (!err) {
 									user.update({
@@ -233,9 +238,7 @@ app.get("/login/callback", passport.authenticate('twitter', { failureRedirect: '
 						stripe.subscriptions.create({
 							customer: userCustomer.id,
 							items: [{ plan: process.env.STRIPE_PLAN_ID }],
-							collection_method: "send_invoice",
-							trial_period_days: 15,
-							days_until_due: 7
+							trial_period_days: 15
 						}, (err, subscription) => {
 							if(!err){
 								user.update({

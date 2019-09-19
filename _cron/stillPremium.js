@@ -53,3 +53,38 @@ User.findAll({
         })
     })
 }).catch((err) => console.log(err))
+
+
+User.findAll({ // Update status for those who renewed their subscription a bit late
+    where: {
+        stripe_subscription_id: null,
+        stripe_customer_id: {
+            [Sequelize.Op.ne]: null
+        }
+    }
+}).then((users) => {
+    users.forEach((user) => {
+        stripe.customers.retrieve(user.stripe_customer_id, function(err, customer){
+            if(err){
+                console.log("error retrieving customer ", err)
+                return
+            }
+
+
+            let subscription = undefined
+            try{
+                subscription = customer.subscriptions.data.filter((e) => e.status == "active")[0]
+            }catch(e){
+                console.warn("No subscription for user " + user.screen_name)
+            }
+
+            if(subscription !== undefined){
+                console.log("SUB: User renewed, updating his/her rights")
+
+                user.update({
+                    stripe_subscription_id: subscription.id
+                })
+            }
+        })
+    })
+}).catch((err) => console.log(err))

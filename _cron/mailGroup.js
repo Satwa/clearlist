@@ -98,7 +98,7 @@ User.findAll({where: {
 					state: 0,
 					user_id: user.twitter_id
 				},
-				order: ((user.stripe_subscription_id != null) ? [['prioritize', 'DESC']] : sequelize.random())
+				order: [['prioritize', 'DESC'], sequelize.random()]
 			}).then((link) => {
 				if(!link){
 					console.log("User has no more links waiting")
@@ -107,7 +107,7 @@ User.findAll({where: {
 				read(link.link, (err, article, meta) => {
 					if(err){
 						console.log("Error fetching article.")
-						console.log(err)
+						console.warn(err)
 						return
 					}
 					ejs.renderFile("./_cron/template.ejs", {
@@ -116,8 +116,11 @@ User.findAll({where: {
 						link: link.link,
 					}, {/* wut */}, (err, str) => {
 						if(err){
-							console.log("Error redering template.")
+							// TODO: Pick another one
+							console.log("Error rendering template.")
 							console.warn(err)
+
+							sendMail(process.env.WARNING_EMAIL_NOTIFICATION, `[CL] Error rendering template for ${user.screen_name}`, "", `Error rending link ${article.title} with link ${link.link} at` + Date())
 						}else{
 							sendMail(user.email, "Reading Time - " + article.title, str, "Hey " + user.screen_name + ", here's a cool thing to read today! \n" + article.content) 
 							
@@ -130,10 +133,10 @@ User.findAll({where: {
 					})
 				})
 
-			}).catch((err) => console.log(err))
+			}).catch((err) => console.warn(err))
 		}
 	})
-}).catch((err) => console.log(err))
+}).catch((err) => console.warn(err))
 
 let sendMail = (email, subject, html, text) => {
 	let mailOptions = {
