@@ -195,7 +195,6 @@ let saveLink = (link, uid) => {
     if (!link.includes("http")) {
         url = "http://" + link
     }
-    console.log(url)
 
     urlExists(url, (err, exists) => {
         if (exists) {
