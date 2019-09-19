@@ -6,6 +6,7 @@ const extractor 	= require('unfluff')
 const requestify 	= require('requestify')
 const ejs  		  	= require('ejs')
 const read 			= require('node-readability')
+const SummaryTool 	= require('node-summary')
 
 sequelize
  	.authenticate()
@@ -77,16 +78,16 @@ User.findAll({where: {
 		schedule: {
 			[Sequelize.Op.ne]: null // NOT NULL
 		},
-		stripe_subscription_id: {
-			[Sequelize.Op.ne]: null // AND SUBSCRIBED
-		}
+		// stripe_subscription_id: {
+		// 	[Sequelize.Op.ne]: null // AND SUBSCRIBED
+		// }
 	}
 }).then((users) => {
 	users.forEach((user) => {
 		let d = new Date()
 		d.setHours(d.getUTCHours() + parseInt(user.schedule.split(":")[0]))
 
-		if(d.getHours() == user.hour_preference){
+		if(true){ //d.getHours() == user.hour_preference
 			if (user.stripe_subscription_id != null && !user.days_preference.includes(d.getDay().toString())){ // If premium and day is busy (= not activated)
 				console.log(user.screen_name + " is a Premium user and won't receive a mail")
 				return
@@ -110,26 +111,38 @@ User.findAll({where: {
 						console.warn(err)
 						return
 					}
-					ejs.renderFile("./_cron/template.ejs", {
-						title: article.title,
-						content: article.content,
-						link: link.link,
-					}, {/* wut */}, (err, str) => {
-						if(err){
-							// TODO: Pick another one
-							console.log("Error rendering template.")
-							console.warn(err)
 
-							sendMail(process.env.WARNING_EMAIL_NOTIFICATION, `[CL] Error rendering template for ${user.screen_name}`, "", `Error rending link ${article.title} with link ${link.link} at` + Date())
-						}else{
-							sendMail(user.email, "Reading Time - " + article.title, str, "Hey " + user.screen_name + ", here's a cool thing to read today! \n" + article.content) 
-							
-							link.update({
-								state: 1
+					SummaryTool.summarize(article.title, article.content, function (err, summary) {
+						let sum = ""
+						if(!err){
+							sum = summary
+
+							ejs.renderFile("./_cron/template.ejs", {
+								title: article.title,
+								content: article.content,
+								link: link.link,
+								summary: sum
+							}, {/* wut */ }, (err, str) => {
+								if (err) {
+									// TODO: Pick another one
+									console.log("Error rendering template.")
+									console.warn(err)
+
+									sendMail(process.env.WARNING_EMAIL_NOTIFICATION, `[CL] Error rendering template for ${user.screen_name}`, "", `Error rending link ${article.title} with link ${link.link} at` + Date())
+								} else {
+									sendMail(user.email, "Reading Time - " + article.title, str, "Hey " + user.screen_name + ", here's a cool thing to read today! \n" + article.content)
+
+									link.update({
+										state: 1
+									})
+								}
+
+								article.close()
 							})
+						}else{ 
+							console.warn("Something went wrong when summarizing!")
 						}
-						
-						article.close()
+
 					})
 				})
 

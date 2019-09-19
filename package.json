@@ -20,6 +20,7 @@
     "meta-extractor": "^1.5.2",
     "node-readability": "^3.0.0",
     "node-schedule": "^1.3.2",
+    "node-summary": "satwa/node-summary#master",
     "nodemailer": "^4.7.0",
     "passport": "^0.4.0",
     "passport-twitter": "^1.0.0",

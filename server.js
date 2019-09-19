@@ -30,8 +30,11 @@ if(process.env.STATUS){ // Only when dev environment
 	
 	schedule.scheduleJob("01 * * * *", () => {
 		require("./_cron/fetchPocket") // fetch from Pocket every hour
+		
+		require("./_cron/handleResponse") // mailbot every hour
 	
 		require("./_cron/mailGroup") // mail group every hour
+
 	})
 	schedule.scheduleJob("*/2 * * * *", () => {
 		require("./_cron/fetchTitle") // every 5 minutes
