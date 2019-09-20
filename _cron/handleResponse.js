@@ -79,7 +79,7 @@ let imap = new Imap({
     host: process.env.BOT_HOST,
     port: process.env.BOT_PORT,
     tls: (process.env.BOT_SECURE === 'false') ? false : true,
-    tlsOptions: { rejectUnauthorized: false }
+    authTimeout: process.env.BOT_AUTH_TIMEOUT
 })
 
 function openInbox(cb) {
