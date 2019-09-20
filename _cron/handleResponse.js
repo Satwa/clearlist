@@ -78,7 +78,7 @@ let imap = new Imap({
     password: process.env.BOT_PASS,
     host: process.env.BOT_HOST,
     port: process.env.BOT_PORT,
-    tls: (process.env.MAIL_SECURE === 'false') ? false : true,
+    tls: (process.env.BOT_SECURE === 'false') ? false : true,
     tlsOptions: { rejectUnauthorized: false }
 })
 
@@ -135,7 +135,7 @@ imap.once('ready', function () {
     })
 })
 
-imap.once('error', function (err) {
+imap.on('error', function (err) {
     console.warn(err)
 })
 
