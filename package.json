@@ -15,7 +15,7 @@
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "imap": "^0.8.19",
-    "jsdom": "^15.1.1",
+    "jsdom": "^16.4.0",
     "mailparser": "^2.7.1",
     "meta-extractor": "^1.5.2",
     "node-readability": "^3.0.0",
