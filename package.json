@@ -29,7 +29,7 @@
     "requestify": "^0.2.5",
     "sequelize": "^5.10.1",
     "sqlite3": "^4.0.9",
-    "stripe": "^7.4.0",
+    "stripe": "^8.95.0",
     "twit": "^2.2.11",
     "unfluff": "^3.2.0",
     "url-exists": "^1.0.3"
